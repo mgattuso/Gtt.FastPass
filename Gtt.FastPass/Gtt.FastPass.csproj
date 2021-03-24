@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/mgattuso/gtt.FastPass</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Gtt.FastPass</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
