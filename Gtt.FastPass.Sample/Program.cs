@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Gtt.FastPass.Sample.Flows;
 
 namespace Gtt.FastPass.Sample
@@ -7,10 +10,9 @@ namespace Gtt.FastPass.Sample
     {
         static int Main(string[] args)
         {
-            var n = new DeckOfCardsTests().ShuffleDeck(new FastPassEndpoint("http://deckofcardsapi.com/api"));
-
-
-            return GlobalResults.FailedTests > 0 ? -1 : 0;
+            var root = new FastPassEndpoint("http://deckofcardsapi.com/api");
+            return FastPassTestRunner.RunAllTests(root);
         }
     }
+
 }

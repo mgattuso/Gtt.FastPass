@@ -245,8 +245,22 @@ namespace Gtt.FastPass
                 
                 if (!string.IsNullOrWhiteSpace(result.Actual))
                     actual = $"Actual: {result.Actual}";
-                
-                Console.WriteLine($"{(result.Passed ? "PASS:" : "FAIL:")}  {result.Name} {expected} {actual}");
+
+                var current = Console.ForegroundColor;
+                if (result.Passed)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("PASS:");
+                    Console.ForegroundColor = current;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("FAIL:");
+                    Console.ForegroundColor = current;
+                }
+
+                Console.WriteLine($"  {result.Name} {expected} {actual}");
             }
 
             return this;
