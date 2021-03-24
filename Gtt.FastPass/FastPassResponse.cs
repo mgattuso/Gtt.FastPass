@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using Gtt.FastPass.Serializers;
 
 namespace Gtt.FastPass
@@ -39,7 +40,7 @@ namespace Gtt.FastPass
             {
                 int code = f(this);
                 bool passed = code == StatusCode;
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = "Status Code",
                     Passed = passed,
@@ -49,7 +50,7 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = "Status Code",
                     Passed = false,
@@ -66,7 +67,7 @@ namespace Gtt.FastPass
             try
             {
                 bool passed = code == StatusCode;
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = "Status Code",
                     Passed = passed,
@@ -76,7 +77,7 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = "Status Code",
                     Passed = false,
@@ -96,7 +97,7 @@ namespace Gtt.FastPass
                 passes = Headers.Select(x => x.Key).Contains(header, StringComparer.OrdinalIgnoreCase);
             }
 
-            _testResults.Add(new TestResult
+            AddTestResult(new TestResult
             {
                 Passed = passes,
                 Name = "Has Header",
@@ -136,7 +137,7 @@ namespace Gtt.FastPass
                 }
             }
 
-            _testResults.Add(new TestResult
+            AddTestResult(new TestResult
             {
                 Passed = passes,
                 Name = "Has Header with Value",
@@ -147,12 +148,22 @@ namespace Gtt.FastPass
             return this;
         }
 
+        private void AddTestResult(TestResult result)
+        {
+            if (result.Passed)
+                Interlocked.Increment(ref GlobalResults.PassedTests);
+            else
+                Interlocked.Increment(ref GlobalResults.FailedTests);
+
+            _testResults.Add(result);
+        }
+
         public FastPassResponse AssertBody(string name, Func<string, bool> f)
         {
             try
             {
                 bool passes = f(Content);
-                _testResults.Add(new TestResult()
+                AddTestResult(new TestResult()
                 {
                     Name = "Body " + name,
                     Passed = passes
@@ -160,7 +171,7 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = "Body " + name,
                     Passed = false,
@@ -176,7 +187,7 @@ namespace Gtt.FastPass
             try
             {
                 bool passes = f(this, Content);
-                _testResults.Add(new TestResult
+                AddTestResult(new TestResult
                 {
                     Name = name,
                     Passed = passes
@@ -184,7 +195,7 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                _testResults.Add(new TestResult()
+                AddTestResult(new TestResult()
                 {
                     Name = name,
                     Passed = false,
