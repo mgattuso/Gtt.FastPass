@@ -23,7 +23,7 @@ jobs:
       run: dotnet build --no-restore
       
     - name: Deploy Nuget Package
-      uses: Rebel028/publish-nuget@2.6.1
+      uses: brandedoutcast/publish-nuget@v2.5.5
       with:
         NUGET_KEY: ${{ secrets.GTT_GITHUB_NUGET }}
         PROJECT_FILE_PATH: Gtt.FastPass/Gtt.FastPass.csproj
