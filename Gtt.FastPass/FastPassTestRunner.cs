@@ -59,7 +59,6 @@ namespace Gtt.FastPass
 
             }
 
-
             return GlobalResults.FailedTests > 0 ? -1 : 0;
         }
 
@@ -73,5 +72,10 @@ namespace Gtt.FastPass
                 }
             }
         }
+    }
+
+    public class TestOptions
+    {
+        public bool PrintHttpContext { get; set; }
     }
 }

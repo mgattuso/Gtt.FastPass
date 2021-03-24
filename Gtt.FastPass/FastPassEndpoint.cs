@@ -11,9 +11,12 @@ namespace Gtt.FastPass
         private int port;
         private string query;
         private readonly List<string> paths = new List<string>();
+        public TestOptions Options { get; internal set; } = new TestOptions();
 
-        public FastPassEndpoint(string root)
+        public FastPassEndpoint(string root, Action<TestOptions> opts = null)
         {
+            opts?.Invoke(Options);
+
             if (!string.IsNullOrWhiteSpace(root))
             {
                 Endpoint(root);
@@ -62,7 +65,7 @@ namespace Gtt.FastPass
 
         public FastPassEndpoint Clone(string testId = null)
         {
-            var ep = new FastPassEndpoint(BuildUrl());
+            var ep = new FastPassEndpoint(BuildUrl()) {Options = Options};
 
             if (!string.IsNullOrWhiteSpace(testId))
                 ep.WithTestIdentifier(testId);

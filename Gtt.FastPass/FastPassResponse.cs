@@ -28,14 +28,15 @@ namespace Gtt.FastPass
             StatusCode = (int)response.StatusCode;
             Content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             Request.Endpoint.Response = this;
+            WritePayload();
         }
 
-        public FastPassResponse HasStatusCode(HttpStatusCode code)
+        public FastPassResponse AssertStatusCode(HttpStatusCode code)
         {
-            return HasStatusCode((int)code);
+            return AssertStatusCode((int)code);
         }
 
-        public FastPassResponse HasStatusCode(Func<FastPassResponse, int> f)
+        public FastPassResponse AssertStatusCode(Func<FastPassResponse, int> f)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse HasStatusCode(int code)
+        public FastPassResponse AssertStatusCode(int code)
         {
             try
             {
@@ -90,7 +91,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse HasHeader(string header, bool caseSensitive = false)
+        public FastPassResponse AssertHeader(string header, bool caseSensitive = false)
         {
             var passes = Headers.ContainsKey(header);
             if (caseSensitive == false && !passes)
@@ -109,7 +110,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse HasHeaderWithValue(string header, string value, bool caseSensitive = false)
+        public FastPassResponse AssertHeaderWithValue(string header, string value, bool caseSensitive = false)
         {
             string actualValue = "";
             string actualHeader = "";
@@ -183,6 +184,31 @@ namespace Gtt.FastPass
             return this;
         }
 
+        public FastPassResponse AssertBody<T>(string name, Func<T, bool> f)
+        {
+            try
+            {
+                T obj = new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
+                bool passes = f(obj);
+                AddTestResult(new TestResult()
+                {
+                    Name = "Body " + name,
+                    Passed = passes
+                });
+            }
+            catch (Exception ex)
+            {
+                AddTestResult(new TestResult
+                {
+                    Name = "Body " + name,
+                    Passed = false,
+                    Actual = ex.ToString()
+                });
+            }
+
+            return this;
+        }
+
         public FastPassResponse AssertBody(string name, Func<FastPassResponse, string, bool> f)
         {
             try
@@ -207,8 +233,38 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse WritePayload()
+        public FastPassResponse AssertBody<T>(string name, Func<FastPassResponse, T, bool> f)
         {
+            try
+            {
+                T obj = new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
+                bool passes = f(this, obj);
+                AddTestResult(new TestResult
+                {
+                    Name = name,
+                    Passed = passes
+                });
+            }
+            catch (Exception ex)
+            {
+                AddTestResult(new TestResult()
+                {
+                    Name = name,
+                    Passed = false,
+                    Actual = ex.ToString()
+                });
+            }
+
+            return this;
+        }
+
+        private FastPassResponse WritePayload()
+        {
+            if (!Request.Endpoint.Options.PrintHttpContext)
+            {
+                return this;
+            }
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"{Request.Method} {Request.Endpoint.BuildUrl()}");
             foreach (var header in Request.Headers)
@@ -264,12 +320,6 @@ namespace Gtt.FastPass
                 Console.WriteLine($"  {result.Name} {expected} {actual}");
             }
 
-            return this;
-        }
-
-        public FastPassResponse StoreData(string name)
-        {
-            GlobalResults.TestData[name] = this;
             return this;
         }
     }

@@ -10,7 +10,10 @@ namespace Gtt.FastPass.Sample
     {
         static int Main(string[] args)
         {
-            var root = new FastPassEndpoint("http://deckofcardsapi.com/api");
+            var root = new FastPassEndpoint("http://deckofcardsapi.com/api", opts =>
+            {
+                opts.PrintHttpContext = true;
+            });
             return FastPassTestRunner.RunAllTests(root);
         }
     }

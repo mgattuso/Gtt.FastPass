@@ -9,7 +9,6 @@ namespace Gtt.FastPass
     {
         public static int FailedTests;
         public static int PassedTests;
-        public static Dictionary<string, FastPassResponse> TestData = new Dictionary<string, FastPassResponse>();
         public static Dictionary<string, TestDefinition> Tests = new Dictionary<string, TestDefinition>();
     }
 

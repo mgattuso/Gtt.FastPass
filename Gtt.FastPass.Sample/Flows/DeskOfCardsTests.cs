@@ -19,12 +19,10 @@ namespace Gtt.FastPass.Sample.Flows
                 .WithHeader("Content-Type", "application/json")
                 .WithHeader("Accepts", "application/json")
                 .Get()
-                .HasStatusCode(200)
-                .HasHeader("Server")
-                .HasHeaderWithValue("CF-Cache-Status", "dynamic")
+                .AssertStatusCode(200)
+                .AssertHeader("Server")
+                .AssertHeaderWithValue("CF-Cache-Status", "dynamic")
                 .AssertBody("Contains deck_id", x => x.Contains("deck_id"))
-                .StoreData("ShuffleDeck")
-                .WritePayload()
                 .WriteResults();
 
             return Task.CompletedTask;
