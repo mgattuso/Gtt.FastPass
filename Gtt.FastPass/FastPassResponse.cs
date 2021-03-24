@@ -11,10 +11,10 @@ namespace Gtt.FastPass
 {
     public class FastPassResponse
     {
-        private readonly FastPassRequestBuilder _requestBuilder;
+        public FastPassRequestBuilder Request { get; private set; }
         private readonly List<TestResult> _testResults = new List<TestResult>();
 
-        public Dictionary<string, string[]> Headers { get; } = new Dictionary<string, string[]>();
+        public Dictionary<string, string[]> Headers { get; }
 
         public int StatusCode { get; }
         public string Content { get; }
@@ -22,11 +22,12 @@ namespace Gtt.FastPass
 
         public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpResponseMessage response)
         {
-            _requestBuilder = requestBuilder;
+            Request = requestBuilder;
             HttpVersion = response.Version;
             Headers = response.Headers.ToDictionary(x => x.Key, y => y.Value.ToArray());
             StatusCode = (int)response.StatusCode;
             Content = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            Request.Endpoint.Response = this;
         }
 
         public FastPassResponse HasStatusCode(HttpStatusCode code)
@@ -209,13 +210,13 @@ namespace Gtt.FastPass
         public FastPassResponse WritePayload()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"{this._requestBuilder.Method} {this._requestBuilder.Endpoint.BuildUrl()}");
-            foreach (var header in _requestBuilder.Headers)
+            sb.AppendLine($"{Request.Method} {Request.Endpoint.BuildUrl()}");
+            foreach (var header in Request.Headers)
             {
                 sb.AppendLine($"{header.Key}: {string.Join("; ", header.Value)}");
             }
 
-            var prettyContent = new JsonObjectSerializer(true).Pretty(_requestBuilder.Content);
+            var prettyContent = new JsonObjectSerializer(true).Pretty(Request.Content);
             sb.AppendLine(prettyContent);
 
             sb.AppendLine();
@@ -263,6 +264,12 @@ namespace Gtt.FastPass
                 Console.WriteLine($"  {result.Name} {expected} {actual}");
             }
 
+            return this;
+        }
+
+        public FastPassResponse StoreData(string name)
+        {
+            GlobalResults.TestData[name] = this;
             return this;
         }
     }

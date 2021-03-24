@@ -23,6 +23,7 @@ namespace Gtt.FastPass.Sample.Flows
                 .HasHeader("Server")
                 .HasHeaderWithValue("CF-Cache-Status", "dynamic")
                 .AssertBody("Contains deck_id", x => x.Contains("deck_id"))
+                .StoreData("ShuffleDeck")
                 .WritePayload()
                 .WriteResults();
 

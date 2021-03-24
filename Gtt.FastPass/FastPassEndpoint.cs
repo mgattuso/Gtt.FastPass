@@ -5,6 +5,7 @@ namespace Gtt.FastPass
 {
     public class FastPassEndpoint
     {
+        public string TestId { get; private set; }
         private string protocol;
         private string host;
         private int port;
@@ -17,6 +18,12 @@ namespace Gtt.FastPass
             {
                 Endpoint(root);
             }
+        }
+
+        public FastPassEndpoint WithTestIdentifier(string testId)
+        {
+            TestId = testId;
+            return this;
         }
 
 
@@ -53,6 +60,16 @@ namespace Gtt.FastPass
             return new FastPassRequestBuilder(this);
         }
 
+        public FastPassEndpoint Clone(string testId = null)
+        {
+            var ep = new FastPassEndpoint(BuildUrl());
+
+            if (!string.IsNullOrWhiteSpace(testId))
+                ep.WithTestIdentifier(testId);
+
+            return ep;
+        }
+
         public string BuildUrl()
         {
             string path = paths.Count == 0 ? "" : "/" + string.Join("/", paths);
@@ -71,5 +88,6 @@ namespace Gtt.FastPass
 
             return path;
         }
+        internal FastPassResponse Response { get; set; }
     }
 }

@@ -19,12 +19,44 @@ namespace Gtt.FastPass
                 string name = attr?.Name ?? t.Name;
                 Console.WriteLine($"Test Suite: {name}");
                 Console.WriteLine();
-                var suite = Activator.CreateInstance(t);
                 var tests = t.GetMembers().Where(m => m.GetCustomAttribute<ApiTestAttribute>() != null).OfType<MethodInfo>();
                 foreach (MethodInfo test in tests)
                 {
-                    test.Invoke(suite, new object[] { root });
+                    string testReference = $"{t.Name}:{test.Name}";
+                    GlobalResults.Tests[testReference] = new TestDefinition
+                    {
+                        TestClass = t,
+                        TestMethod = test,
+                        EndPoint = root.Clone(testReference)
+                    };
+                    var p = test.GetParameters();
+                    if (p.Length != 0 && p[0].ParameterType != typeof(FastPassEndpoint))
+                    {
+                        Console.WriteLine(
+                            $"Cannot call test {name} with the parameters defined. Should take a single argument of the type 'FastPassEndpoint'");
+                    }
                 }
+            }
+
+            foreach (var testDefinition in GlobalResults.Tests)
+            {
+                var test = testDefinition.Value.TestMethod;
+                var suite = Activator.CreateInstance(testDefinition.Value.TestClass);
+                var testRoot = testDefinition.Value.EndPoint;
+                var p = test.GetParameters();
+
+                try
+                {
+                    if (!testDefinition.Value.TestHasBeenRun)
+                    {
+                        test.Invoke(suite, new object[] {testRoot});
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GlobalResults.Tests[testDefinition.Key].Exception = ex;
+                }
+
             }
 
 
