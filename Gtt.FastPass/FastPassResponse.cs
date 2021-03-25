@@ -12,6 +12,7 @@ namespace Gtt.FastPass
     public class FastPassResponse
     {
         public FastPassRequestBuilder Request { get; }
+        public long ResponseTime { get; }
         public List<TestResult> Results { get; } = new List<TestResult>();
         public bool AllTestsPassed => Results.Count > 0 && Results.All(x => x.Passed);
 
@@ -32,9 +33,10 @@ namespace Gtt.FastPass
 
         public Version HttpVersion { get; }
 
-        public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpResponseMessage response)
+        public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpResponseMessage response, long responseTime)
         {
             Request = requestBuilder;
+            ResponseTime = responseTime;
             HttpVersion = response.Version;
             Headers = response.Headers.ToDictionary(x => x.Key, y => y.Value.ToArray());
             StatusCode = (int)response.StatusCode;
@@ -339,7 +341,7 @@ namespace Gtt.FastPass
                 string actual = "";
                 if (!string.IsNullOrWhiteSpace(result.Expected))
                     expected = $"Expected: {result.Expected}";
-                
+
                 if (!string.IsNullOrWhiteSpace(result.Actual))
                     actual = $"Actual: {result.Actual}";
 
@@ -366,5 +368,43 @@ namespace Gtt.FastPass
 
             return this;
         }
+
+        public T ReturnBody<T>()
+        {
+            return ResAs<T>();
+        }
+
+        public (TRequest Request, TResponse Response) ReturnBody<TRequest, TResponse>()
+        {
+            return (ReqAs<TRequest>(), ResAs<TResponse>());
+        }
+
+        public RequestResponse<TRequest, TResponse> ReturnContext<TRequest, TResponse>()
+        {
+            return new RequestResponse<TRequest, TResponse>
+            {
+                Request = ReqAs<TRequest>(),
+                Response = ResAs<TResponse>()
+            };
+        }
+
+        public FastPassResponse AssertMaxResponseTimeMs(long responseTime)
+        {
+            AddTestResult(new TestResult
+            {
+                Name = "Max Response time",
+                Passed = ResponseTime <= responseTime,
+                Actual = ResponseTime + "ms",
+                Expected = responseTime + "ms"
+            });
+
+            return this;
+        }
+    }
+
+    public class RequestResponse<TReq, TRes>
+    {
+        public TReq Request { get; set; }
+        public TRes Response { get; set; }
     }
 }

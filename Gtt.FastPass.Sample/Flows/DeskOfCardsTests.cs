@@ -17,23 +17,24 @@ namespace Gtt.FastPass.Sample.Flows
             DeckResponse response = null;
             test
                 .BaseCall()
-                .DependentOn<DeckResponse>(ShuffleDeck, x => response = x)
+                .DependentOn(ShuffleDeck, x => response = x)
                 .Get($"deck/{response.Deck_id}/draw/?count=2")
                 .AssertStatusCode(200)
+                .AssertMaxResponseTimeMs(1000)
                 .WriteResults();
         }
 
         [ApiTest]
-        public void ShuffleDeck(FastPassEndpoint test)
+        public DeckResponse ShuffleDeck(FastPassEndpoint test)
         {
-            test
+            return test
                 .BaseCall()
                 .Get("deck/new/shuffle/?deck_count=1")
                 .AssertStatusCode(200)
-                .AssertHeader("Server")
-                .AssertHeaderWithValue("CF-Cache-Status", "dynamic")
-                .AssertBody("Contains deck_id", x => x.Contains("deck_id"))
-                .WriteResults();
+                .AssertMaxResponseTimeMs(1000)
+                .AssertBody<DeckResponse>("Contains deck_id", x => !string.IsNullOrWhiteSpace(x.Deck_id))
+                .WriteResults()
+                .ReturnBody<DeckResponse>();
         }
 
 
@@ -45,7 +46,7 @@ namespace Gtt.FastPass.Sample.Flows
         {
             return endpoint.Endpoint("api")
                 .WithHeader("Content-Type", "application/json")
-                .WithHeader("Accepts", "application/json").Clone();
+                .WithHeader("Accepts", "application/json");
         }
 
     }
