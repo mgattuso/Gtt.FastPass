@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
@@ -11,7 +12,10 @@ namespace Gtt.FastPass
 {
     public class FastPassRequestBuilder
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient(new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
+        });
         public Dictionary<string, string[]> Headers { get; private set; } = new Dictionary<string, string[]>();
         public string Content { get; private set; }
         public HttpMethod Method { get; set; }
@@ -53,27 +57,27 @@ namespace Gtt.FastPass
             return Get("");
         }
 
-        public FastPassResponse Get(string path)
+        public FastPassResponse Get(string path, bool resetPath = false)
         {
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Get);
         }
 
-        public FastPassResponse Post(string path = null)
+        public FastPassResponse Post(string path = null, bool resetPath = false)
         {
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Post);
         }
 
-        public FastPassResponse Post<T>(string path, T obj)
+        public FastPassResponse Post<T>(string path, T obj, bool resetPath = false)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Post);
         }
@@ -84,19 +88,19 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Post);
         }
 
-        public FastPassResponse Put(string path = null)
+        public FastPassResponse Put(string path = null, bool resetPath = false)
         {
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Put);
         }
 
-        public FastPassResponse Put<T>(string path, T obj)
+        public FastPassResponse Put<T>(string path, T obj, bool resetPath)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Put);
         }
@@ -107,19 +111,19 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Put);
         }
 
-        public FastPassResponse Delete(string path = null)
+        public FastPassResponse Delete(string path = null, bool resetPath = false)
         {
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Delete);
         }
 
-        public FastPassResponse Delete<T>(string path, T obj)
+        public FastPassResponse Delete<T>(string path, T obj, bool resetPath)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
-                Endpoint.Endpoint(path);
+                Endpoint.Endpoint(path, resetPath);
 
             return Call(HttpMethod.Delete);
         }

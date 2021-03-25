@@ -32,8 +32,13 @@ namespace Gtt.FastPass
         }
 
 
-        public FastPassRequestBuilder Endpoint(string url = null)
+        public FastPassRequestBuilder Endpoint(string url = null, bool resetPath = false)
         {
+            if (resetPath)
+            {
+                paths.Clear();
+            }
+
             if (string.IsNullOrWhiteSpace(url))
             {
                 return new FastPassRequestBuilder(this);
