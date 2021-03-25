@@ -139,6 +139,7 @@ namespace Gtt.FastPass
                 "Content-Type"
             };
 
+            Console.WriteLine();
             using (var cw = new ConsoleWithColor(ConsoleColor.DarkYellow))
             {
                 var title = "TEST: " + Endpoint.Name;
@@ -206,8 +207,9 @@ namespace Gtt.FastPass
                 using (var cw = new ConsoleWithColor(ConsoleColor.Black, ConsoleColor.Red))
                 {
                     cw.Write($"Dependency did not pass {dependencyDefinition.EndPoint.Name}");
-                    cw.WriteLine();
                 }
+
+                Console.WriteLine();
 
                 throw new Exception("Dependency failed");
             }
@@ -219,7 +221,7 @@ namespace Gtt.FastPass
 
         public FastPassRequestBuilder Clone(string testId = null, string url = null)
         {
-            var endpoint = Endpoint.Clone(testId);
+            var endpoint = Endpoint.Clone();
             var request = endpoint.Endpoint(url);
             foreach (var header in Headers ?? new Dictionary<string, string[]>())
             {

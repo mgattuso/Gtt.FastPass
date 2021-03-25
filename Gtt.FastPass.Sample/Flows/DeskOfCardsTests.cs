@@ -16,14 +16,11 @@ namespace Gtt.FastPass.Sample.Flows
         public void ShuffleDeck(FastPassEndpoint test)
         {
             test
-                .Endpoint("deck/new/shuffle/?deck_count=1")
-                .WithHeader("Content-Type", "application/json")
-                .WithHeader("Accepts", "application/json")
-                .Clone()
-                //.DependentOnPassingTest(GetNewDeck, x =>
-                //{
-                //    Console.WriteLine(x.Content);
-                //})
+                .MyClone()
+                .DependentOn(GetNewDeck, x =>
+                {
+                    Console.WriteLine("DEPEND" + x.Content);
+                })
                 .Get()
                 .AssertStatusCode(200)
                 .AssertHeader("Server")
@@ -36,15 +33,24 @@ namespace Gtt.FastPass.Sample.Flows
         public void GetNewDeck(FastPassEndpoint test)
         {
             test
-                .Endpoint("deck/new/shuffle/?deck_count=1")
-                .WithHeader("Content-Type", "application/json")
-                .WithHeader("Accepts", "application/json")
+                .MyClone()
                 .Get()
-                .AssertStatusCode(201)
+                .AssertStatusCode(200)
                 .AssertHeader("Server")
                 .AssertHeaderWithValue("CF-Cache-Status", "dynamic")
                 .AssertBody("Contains deck_id", x => x.Contains("deck_id"))
                 .WriteResults();
         }
+    }
+
+    public static class Ext
+    {
+        public static FastPassRequestBuilder MyClone(this FastPassEndpoint endpoint)
+        {
+            return endpoint.Endpoint("deck/new/shuffle/?deck_count=1")
+                .WithHeader("Content-Type", "application/json")
+                .WithHeader("Accepts", "application/json");
+        }
+
     }
 }

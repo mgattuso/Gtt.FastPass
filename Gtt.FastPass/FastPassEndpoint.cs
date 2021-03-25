@@ -68,10 +68,8 @@ namespace Gtt.FastPass
         public FastPassEndpoint Clone(string testId = null)
         {
             var ep = new FastPassEndpoint(BuildUrl()) { Options = Options };
-
-            if (!string.IsNullOrWhiteSpace(testId))
-                ep.WithTestIdentifier(testId);
-
+            ep.WithTestIdentifier(testId ?? TestId);
+            ep.Name = ep.Name;
             return ep;
         }
 
