@@ -12,10 +12,7 @@ namespace Gtt.FastPass
 {
     public class FastPassRequestBuilder
     {
-        private static readonly HttpClient Client = new HttpClient(new HttpClientHandler
-        {
-            AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
-        });
+        private static readonly HttpClient Client = new HttpClient();
         public Dictionary<string, string[]> Headers { get; private set; } = new Dictionary<string, string[]>();
         public string Content { get; private set; }
         public HttpMethod Method { get; set; }
