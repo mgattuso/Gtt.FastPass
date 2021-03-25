@@ -165,7 +165,21 @@ namespace Gtt.FastPass
             return new FastPassResponse(this, response);
         }
 
-        public FastPassRequestBuilder DependentOnPassingTest(Action<FastPassEndpoint> otherCall, Action<FastPassResponse> response)
+        public FastPassRequestBuilder DependentOn<TRes>(Action<FastPassEndpoint> otherCall, Action<TRes> response)
+        {
+            return DependentOn(otherCall, x => response(x.ResAs<TRes>()));
+        }
+
+        public FastPassRequestBuilder DependentOn<TReq, TRes>(Action<FastPassEndpoint> otherCall, Action<TReq> request, Action<TRes> response)
+        {
+            return DependentOn(otherCall, x =>
+            {
+                request(x.ReqAs<TReq>());
+                response(x.ResAs<TRes>());
+            });
+        }
+
+        public FastPassRequestBuilder DependentOn(Action<FastPassEndpoint> otherCall, Action<FastPassResponse> response)
         {
             var otherMethod = otherCall.GetMethodInfo();
             var otherClass = otherMethod.DeclaringType;

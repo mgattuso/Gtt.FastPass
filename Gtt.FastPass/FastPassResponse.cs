@@ -20,9 +20,14 @@ namespace Gtt.FastPass
         public int StatusCode { get; }
         public string Content { get; }
 
-        public T ContentAs<T>()
+        public T ResAs<T>()
         {
             return new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
+        }
+
+        public T ReqAs<T>()
+        {
+            return new JsonObjectSerializer(true).Deserialize<T>(Request.Content).GetAwaiter().GetResult();
         }
 
         public Version HttpVersion { get; }
