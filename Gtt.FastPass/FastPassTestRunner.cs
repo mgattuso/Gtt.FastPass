@@ -23,11 +23,14 @@ namespace Gtt.FastPass
                 foreach (MethodInfo test in tests)
                 {
                     string testReference = $"{t.Name}:{test.Name}";
+                    var endpoint = root.Clone(testReference);
+                    endpoint.Name = test.Name;
                     GlobalResults.Tests[testReference] = new TestDefinition
                     {
+                        Key = testReference,
                         TestClass = t,
                         TestMethod = test,
-                        EndPoint = root.Clone(testReference)
+                        EndPoint = endpoint
                     };
                     var p = test.GetParameters();
                     if (p.Length != 0 && p[0].ParameterType != typeof(FastPassEndpoint))
@@ -40,23 +43,7 @@ namespace Gtt.FastPass
 
             foreach (var testDefinition in GlobalResults.Tests)
             {
-                var test = testDefinition.Value.TestMethod;
-                var suite = Activator.CreateInstance(testDefinition.Value.TestClass);
-                var testRoot = testDefinition.Value.EndPoint;
-                var p = test.GetParameters();
-
-                try
-                {
-                    if (!testDefinition.Value.TestHasBeenRun)
-                    {
-                        test.Invoke(suite, new object[] {testRoot});
-                    }
-                }
-                catch (Exception ex)
-                {
-                    GlobalResults.Tests[testDefinition.Key].Exception = ex;
-                }
-
+                testDefinition.Value.Execute();
             }
 
             return GlobalResults.FailedTests > 0 ? -1 : 0;

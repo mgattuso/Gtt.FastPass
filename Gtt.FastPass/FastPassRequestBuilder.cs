@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using Gtt.FastPass.Serializers;
@@ -138,6 +139,8 @@ namespace Gtt.FastPass
                 "Content-Type"
             };
 
+            Console.WriteLine("TEST: " + Endpoint.Name);
+
             var msg = new HttpRequestMessage(method, Endpoint.BuildUrl());
             foreach (var header in Headers)
             {
@@ -156,5 +159,45 @@ namespace Gtt.FastPass
             var response = Client.SendAsync(msg, HttpCompletionOption.ResponseContentRead, cts.Token).GetAwaiter().GetResult();
             return new FastPassResponse(this, response);
         }
+
+        public FastPassRequestBuilder DependentOnPassingTest(Action<FastPassEndpoint> otherCall, Action<FastPassResponse> response)
+        {
+            var otherMethod = otherCall.GetMethodInfo();
+            var otherClass = otherMethod.DeclaringType;
+            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.TestId];
+            TestDefinition dependencyDefinition = GlobalResults.Tests[$"{otherClass.Name}:{otherMethod.Name}"];
+            string dependencyKey = currentDefinition.Key + "-" + dependencyDefinition.Key;
+            string currentKey = dependencyDefinition.Key + "-" + currentDefinition.Key;
+            if (_dependencies.Contains(currentKey))
+            {
+                throw new Exception($"Circular dependency exception. The dependency on ${dependencyDefinition.Key} is circular");
+            }
+            _dependencies.Add(dependencyKey);
+            if (!dependencyDefinition.TestHasBeenRun)
+            {
+                dependencyDefinition.Execute();
+            }
+
+            if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
+            {
+                response(dependencyDefinition.TestResult);
+            }
+            else
+            {
+                var currentBg = Console.BackgroundColor;
+                var currentCol = Console.ForegroundColor;
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write($"Dependency did not pass {dependencyDefinition.EndPoint.Name}");
+                Console.BackgroundColor = currentBg;
+                Console.ForegroundColor = currentCol;
+                Console.WriteLine();
+                throw new Exception("Dependency failed");
+            }
+
+            return this;
+        }
+
+        private static readonly List<string> _dependencies = new List<string>();
     }
 }

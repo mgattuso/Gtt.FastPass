@@ -12,6 +12,7 @@ namespace Gtt.FastPass
         private string query;
         private readonly List<string> paths = new List<string>();
         public TestOptions Options { get; internal set; } = new TestOptions();
+        public string Name { get; internal set; }
 
         public FastPassEndpoint(string root, Action<TestOptions> opts = null)
         {

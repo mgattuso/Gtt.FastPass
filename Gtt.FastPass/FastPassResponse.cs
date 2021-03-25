@@ -11,13 +11,20 @@ namespace Gtt.FastPass
 {
     public class FastPassResponse
     {
-        public FastPassRequestBuilder Request { get; private set; }
-        private readonly List<TestResult> _testResults = new List<TestResult>();
+        public FastPassRequestBuilder Request { get; }
+        public List<TestResult> Results { get; } = new List<TestResult>();
+        public bool AllTestsPassed => Results.Count > 0 && Results.All(x => x.Passed);
 
         public Dictionary<string, string[]> Headers { get; }
 
         public int StatusCode { get; }
         public string Content { get; }
+
+        public T ContentAs<T>()
+        {
+            return new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
+        }
+
         public Version HttpVersion { get; }
 
         public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpResponseMessage response)
@@ -157,7 +164,7 @@ namespace Gtt.FastPass
             else
                 Interlocked.Increment(ref GlobalResults.FailedTests);
 
-            _testResults.Add(result);
+            Results.Add(result);
         }
 
         public FastPassResponse AssertBody(string name, Func<string, bool> f)
@@ -293,7 +300,7 @@ namespace Gtt.FastPass
 
         public FastPassResponse WriteResults()
         {
-            foreach (var result in _testResults)
+            foreach (var result in Results)
             {
                 string expected = "";
                 string actual = "";
@@ -319,6 +326,8 @@ namespace Gtt.FastPass
 
                 Console.WriteLine($"  {result.Name} {expected} {actual}");
             }
+
+            Console.WriteLine();
 
             return this;
         }
