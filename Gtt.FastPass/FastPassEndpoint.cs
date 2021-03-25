@@ -32,7 +32,7 @@ namespace Gtt.FastPass
         }
 
 
-        public FastPassRequestBuilder Endpoint(string url)
+        public FastPassRequestBuilder Endpoint(string url = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {

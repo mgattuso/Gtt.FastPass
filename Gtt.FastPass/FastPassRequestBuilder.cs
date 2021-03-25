@@ -202,5 +202,22 @@ namespace Gtt.FastPass
         }
 
         private static readonly List<string> _dependencies = new List<string>();
+
+        public FastPassRequestBuilder Clone(string testId = null, string url = null)
+        {
+            var endpoint = Endpoint.Clone(testId);
+            var request = endpoint.Endpoint(url);
+            foreach (var header in Headers ?? new Dictionary<string, string[]>())
+            {
+                request.WithHeader(header.Key, header.Value);
+            }
+
+            if (Content != null)
+            {
+                request.WithBody(Content);
+            }
+
+            return request;
+        }
     }
 }

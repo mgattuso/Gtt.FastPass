@@ -19,6 +19,7 @@ namespace Gtt.FastPass.Sample.Flows
                 .Endpoint("deck/new/shuffle/?deck_count=1")
                 .WithHeader("Content-Type", "application/json")
                 .WithHeader("Accepts", "application/json")
+                .Clone()
                 //.DependentOnPassingTest(GetNewDeck, x =>
                 //{
                 //    Console.WriteLine(x.Content);
