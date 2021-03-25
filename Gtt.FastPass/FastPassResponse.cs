@@ -73,6 +73,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertStatusCode(int code)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             try
             {
                 bool passed = code == StatusCode;
@@ -100,6 +102,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertHeader(string header, bool caseSensitive = false)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             var passes = Headers.ContainsKey(header);
             if (caseSensitive == false && !passes)
             {
@@ -119,6 +123,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertHeaderWithValue(string header, string value, bool caseSensitive = false)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             string actualValue = "";
             string actualHeader = "";
             var passes = false;
@@ -169,6 +175,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertBody(string name, Func<string, bool> f)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             try
             {
                 bool passes = f(Content);
@@ -193,6 +201,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertBody<T>(string name, Func<T, bool> f)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             try
             {
                 T obj = new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
@@ -218,6 +228,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertBody(string name, Func<FastPassResponse, string, bool> f)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             try
             {
                 bool passes = f(this, Content);
@@ -242,6 +254,8 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertBody<T>(string name, Func<FastPassResponse, T, bool> f)
         {
+            if (Results.Any(x => !x.Passed)) return this;
+
             try
             {
                 T obj = new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
