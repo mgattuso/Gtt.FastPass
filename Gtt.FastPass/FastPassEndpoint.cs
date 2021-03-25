@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Gtt.FastPass
 {
@@ -66,7 +67,7 @@ namespace Gtt.FastPass
 
         public FastPassEndpoint Clone(string testId = null)
         {
-            var ep = new FastPassEndpoint(BuildUrl()) {Options = Options};
+            var ep = new FastPassEndpoint(BuildUrl()) { Options = Options };
 
             if (!string.IsNullOrWhiteSpace(testId))
                 ep.WithTestIdentifier(testId);
@@ -76,8 +77,10 @@ namespace Gtt.FastPass
 
         public string BuildUrl()
         {
-            string path = paths.Count == 0 ? "" : "/" + string.Join("/", paths);
-            return $"{protocol}://{host}:{port}{path}{query}";
+            var pathsWithContent = paths.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            string path = pathsWithContent.Count == 0 ? "" : "/" + string.Join("/", pathsWithContent);
+            var url = $"{protocol}://{host}:{port}{path}{query}";
+            return url;
         }
 
         private string TrimSlashes(string path)

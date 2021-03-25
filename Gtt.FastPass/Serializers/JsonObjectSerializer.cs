@@ -74,7 +74,6 @@ namespace Gtt.FastPass.Serializers
                 var formatted = System.Text.Encoding.UTF8.GetString(stream.ToArray());
                 return formatted;
             }
-            
         }
 
         private JsonSerializerOptions GetOptions()
