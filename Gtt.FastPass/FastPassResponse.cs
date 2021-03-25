@@ -286,28 +286,42 @@ namespace Gtt.FastPass
                 return this;
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"{Request.Method} {Request.Endpoint.BuildUrl()}");
-            foreach (var header in Request.Headers)
+            using (var cw = new ConsoleWithColor(ConsoleColor.Magenta))
             {
-                sb.AppendLine($"{header.Key}: {string.Join("; ", header.Value)}");
+                cw.WriteLine($"{Request.Method} {Request.Endpoint.BuildUrl()}");
+            }
+
+            using (var cw = new ConsoleWithColor(ConsoleColor.DarkGray))
+            {
+                foreach (var header in Request.Headers)
+                {
+                    cw.Write(header.Key + ": ");
+                    cw.Write(string.Join("; ", header.Value), ConsoleColor.White);
+                    cw.WriteLine();
+                }
             }
 
             var prettyContent = new JsonObjectSerializer(true).Pretty(Request.Content);
-            sb.AppendLine(prettyContent);
+            Console.WriteLine(prettyContent);
 
-            sb.AppendLine();
-
-            sb.AppendLine($"HTTP/{HttpVersion} {StatusCode} {(HttpStatusCode) StatusCode}");
-            foreach (var header in Headers)
+            using (var cw = new ConsoleWithColor(ConsoleColor.DarkCyan))
             {
-                sb.AppendLine($"{header.Key}: {string.Join("; ", header.Value)}");
+                cw.WriteLine($"HTTP/{HttpVersion} {StatusCode} {(HttpStatusCode)StatusCode}");
             }
-            var prettyResponse = new JsonObjectSerializer(true).Pretty(Content);
-            sb.AppendLine(prettyResponse);
-            sb.AppendLine();
 
-            Console.WriteLine(sb.ToString());
+            using (var cw = new ConsoleWithColor(ConsoleColor.DarkGray))
+            {
+                foreach (var header in Headers)
+                {
+                    cw.Write(header.Key + ": ");
+                    cw.Write(string.Join("; ", header.Value), ConsoleColor.White);
+                    cw.WriteLine();
+                }
+            }
+
+            var prettyResponse = new JsonObjectSerializer(true).Pretty(Content);
+            Console.WriteLine(prettyResponse);
+            Console.WriteLine();
 
             return this;
         }
@@ -327,15 +341,17 @@ namespace Gtt.FastPass
                 var current = Console.ForegroundColor;
                 if (result.Passed)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("PASS:");
-                    Console.ForegroundColor = current;
+                    using (var cw = new ConsoleWithColor(ConsoleColor.Green))
+                    {
+                        cw.Write("PASS:");
+                    }
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write("FAIL:");
-                    Console.ForegroundColor = current;
+                    using (var cw = new ConsoleWithColor(ConsoleColor.Red))
+                    {
+                        cw.Write("FAIL:");
+                    }
                 }
 
                 Console.WriteLine($"  {result.Name} {expected} {actual}");

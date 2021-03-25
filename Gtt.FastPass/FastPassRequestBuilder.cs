@@ -139,7 +139,12 @@ namespace Gtt.FastPass
                 "Content-Type"
             };
 
-            Console.WriteLine("TEST: " + Endpoint.Name);
+            using (var cw = new ConsoleWithColor(ConsoleColor.DarkYellow))
+            {
+                var title = "TEST: " + Endpoint.Name;
+                cw.WriteLine(title);
+                Console.WriteLine(new string('=', title.Length));
+            }
 
             var msg = new HttpRequestMessage(method, Endpoint.BuildUrl());
             foreach (var header in Headers)
@@ -184,14 +189,12 @@ namespace Gtt.FastPass
             }
             else
             {
-                var currentBg = Console.BackgroundColor;
-                var currentCol = Console.ForegroundColor;
-                Console.BackgroundColor = ConsoleColor.Red;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.Write($"Dependency did not pass {dependencyDefinition.EndPoint.Name}");
-                Console.BackgroundColor = currentBg;
-                Console.ForegroundColor = currentCol;
-                Console.WriteLine();
+                using (var cw = new ConsoleWithColor(ConsoleColor.Black, ConsoleColor.Red))
+                {
+                    cw.Write($"Dependency did not pass {dependencyDefinition.EndPoint.Name}");
+                    cw.WriteLine();
+                }
+
                 throw new Exception("Dependency failed");
             }
 
