@@ -14,13 +14,24 @@ namespace Gtt.FastPass
     public class FastPassRequestBuilder
     {
         private static readonly HttpClient Client = new HttpClient();
+        private static bool _configurationComplete;
+        private static readonly object Lock = new object();
         public Dictionary<string, string[]> Headers { get; private set; } = new Dictionary<string, string[]>();
         public string Content { get; private set; }
         public HttpMethod Method { get; set; }
 
-        public FastPassRequestBuilder(FastPassEndpoint endpoint)
+        public FastPassRequestBuilder(FastPassEndpoint endpoint, TestOptions options)
         {
             Endpoint = endpoint;
+            if (!_configurationComplete)
+            {
+                lock (Lock)
+                {
+                    _configurationComplete = true;
+                    Client.Timeout = new TimeSpan(0, 0, 0, options.HttpConnectionTimeoutSeconds);
+                }
+            }
+            
         }
 
 
@@ -213,7 +224,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassRequestBuilder DependentOn<TReq,TRes>(Func<FastPassEndpoint, ReqRes<TReq,TRes>> otherCall, Action<ReqRes<TReq, TRes>> response)
+        public FastPassRequestBuilder DependentOn<TReq, TRes>(Func<FastPassEndpoint, ReqRes<TReq, TRes>> otherCall, Action<ReqRes<TReq, TRes>> response)
         {
             var otherMethod = otherCall.GetMethodInfo();
             var otherClass = otherMethod.DeclaringType;
@@ -233,7 +244,8 @@ namespace Gtt.FastPass
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
             {
-                response(new ReqRes<TReq, TRes> {
+                response(new ReqRes<TReq, TRes>
+                {
                     Request = dependencyDefinition.TestResult.ReqAs<TReq>(),
                     Response = dependencyDefinition.TestResult.ResAs<TRes>()
                 });

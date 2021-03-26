@@ -113,5 +113,6 @@ namespace Gtt.FastPass
     {
         public bool PrintHttpContext { get; set; }
         public bool WarnOnResponseTimeFailures { get; set; }
+        public int HttpConnectionTimeoutSeconds { get; set; } = 100;
     }
 }

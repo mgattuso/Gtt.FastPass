@@ -14,6 +14,7 @@ namespace Gtt.FastPass.Sample
             {
                 opts.PrintHttpContext = true;
                 opts.WarnOnResponseTimeFailures = true;
+                opts.HttpConnectionTimeoutSeconds = 60 * 20; // 20 mins for local development
             });
             return FastPassTestRunner.RunAllTests(root);
         }

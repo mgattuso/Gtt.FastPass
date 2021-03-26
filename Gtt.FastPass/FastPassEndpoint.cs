@@ -41,7 +41,7 @@ namespace Gtt.FastPass
 
             if (string.IsNullOrWhiteSpace(url))
             {
-                return new FastPassRequestBuilder(this);
+                return new FastPassRequestBuilder(this, Options);
             }
 
             try
@@ -67,7 +67,7 @@ namespace Gtt.FastPass
                 _paths.Add(TrimSlashes(segments[0]));
             }
 
-            return new FastPassRequestBuilder(this);
+            return new FastPassRequestBuilder(this, Options);
         }
 
         public FastPassEndpoint Clone(string testId = null)
