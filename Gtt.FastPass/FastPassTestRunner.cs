@@ -19,12 +19,15 @@ namespace Gtt.FastPass
                 string name = attr?.Name ?? t.Name;
                 Console.WriteLine($"Test Suite: {name}");
                 Console.WriteLine();
+
                 var tests = t.GetMembers().Where(m => m.GetCustomAttribute<ApiTestAttribute>() != null).OfType<MethodInfo>();
                 foreach (MethodInfo test in tests)
                 {
+                    var testAttr = test.GetCustomAttribute<ApiTestAttribute>();
+                    string testName = !string.IsNullOrWhiteSpace(testAttr.Name) ? $"{testAttr.Name} ({test.Name})"  : test.Name;
                     string testReference = $"{t.Name}:{test.Name}";
                     var endpoint = root.Clone(testReference);
-                    endpoint.Name = test.Name;
+                    endpoint.Name = testName;
                     GlobalResults.Tests[testReference] = new TestDefinition
                     {
                         Key = testReference,
@@ -39,6 +42,18 @@ namespace Gtt.FastPass
                             $"Cannot call test {name} with the parameters defined. Should take a single argument of the type 'FastPassEndpoint'");
                     }
                 }
+
+                var warmUps = t.GetMembers().Where(m => m.GetCustomAttribute<WarmUpAttribute>() != null).OfType<MethodInfo>();
+
+                foreach (MethodInfo warmUp in warmUps)
+                {
+                    var w = Activator.CreateInstance(warmUp.DeclaringType);
+                    Console.WriteLine($"Running warm up: {warmUp.DeclaringType.Name}:{warmUp.Name}");
+                    warmUp.Invoke(w, new object[] {root.Clone($"WARMUP {warmUp.DeclaringType.Name}-{warmUp.Name}")});
+                }
+
+                GlobalResults.FailedTests = 0;
+                GlobalResults.PassedTests = 0;
             }
 
             foreach (var testDefinition in GlobalResults.Tests)

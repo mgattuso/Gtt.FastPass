@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -63,16 +62,21 @@ namespace Gtt.FastPass.Serializers
         {
             if (string.IsNullOrWhiteSpace(json)) return "";
 
-            using (var stream = new System.IO.MemoryStream())
-            {
-                using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
+            try {
+                using (var stream = new System.IO.MemoryStream())
                 {
-                    var jsonDocument = JsonDocument.Parse(json);
-                    jsonDocument.WriteTo(writer);
-                }
+                    using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions {Indented = true}))
+                    {
+                        var jsonDocument = JsonDocument.Parse(json);
+                        jsonDocument.WriteTo(writer);
+                    }
 
-                var formatted = System.Text.Encoding.UTF8.GetString(stream.ToArray());
-                return formatted;
+                    var formatted = System.Text.Encoding.UTF8.GetString(stream.ToArray());
+                    return formatted;
+                }
+            } catch (Exception)
+            {
+                return json;
             }
         }
 

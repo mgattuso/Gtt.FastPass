@@ -132,8 +132,6 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Delete);
         }
 
-
-
         public FastPassResponse Call(HttpMethod method)
         {
             Method = method;
@@ -261,22 +259,5 @@ namespace Gtt.FastPass
         }
 
         private static readonly List<string> _dependencies = new List<string>();
-
-        public FastPassRequestBuilder Clone(string testId = null, string url = null)
-        {
-            var endpoint = Endpoint.Clone();
-            var request = endpoint.Endpoint(url);
-            foreach (var header in Headers ?? new Dictionary<string, string[]>())
-            {
-                request.WithHeader(header.Key, header.Value);
-            }
-
-            if (Content != null)
-            {
-                request.WithBody(Content);
-            }
-
-            return request;
-        }
     }
 }

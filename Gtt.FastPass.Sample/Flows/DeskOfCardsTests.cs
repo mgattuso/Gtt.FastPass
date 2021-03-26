@@ -11,6 +11,15 @@ namespace Gtt.FastPass.Sample.Flows
     [ApiTestSuite("Deck of Cards Tests")]
     public class DeckOfCardsTests
     {
+        [WarmUp]
+        public void WarmUp(FastPassEndpoint test)
+        {
+            test.BaseCall()
+                .Get("", resetPath: true)
+                .AssertStatusCode(200)
+                .WriteResults();
+        }
+
         [ApiTest]
         public void DrawACard(FastPassEndpoint test)
         {

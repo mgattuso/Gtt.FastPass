@@ -7,11 +7,11 @@ namespace Gtt.FastPass
     public class FastPassEndpoint
     {
         public string TestId { get; private set; }
-        private string protocol;
-        private string host;
-        private int port;
-        private string query;
-        private readonly List<string> paths = new List<string>();
+        private string _protocol;
+        private string _host;
+        private int _port;
+        private string _query;
+        private readonly List<string> _paths = new List<string>();
         public TestOptions Options { get; internal set; } = new TestOptions();
         public string Name { get; internal set; }
 
@@ -36,7 +36,7 @@ namespace Gtt.FastPass
         {
             if (resetPath)
             {
-                paths.Clear();
+                _paths.Clear();
             }
 
             if (string.IsNullOrWhiteSpace(url))
@@ -49,11 +49,11 @@ namespace Gtt.FastPass
                 var uri = new Uri(url);
                 if (uri.IsAbsoluteUri)
                 {
-                    protocol = uri.Scheme;
-                    host = uri.Host;
-                    port = uri.Port;
-                    query = uri.Query;
-                    paths.Add(TrimSlashes(uri.LocalPath));
+                    _protocol = uri.Scheme;
+                    _host = uri.Host;
+                    _port = uri.Port;
+                    _query = uri.Query;
+                    _paths.Add(TrimSlashes(uri.LocalPath));
                 }
             }
             catch (UriFormatException)
@@ -61,10 +61,10 @@ namespace Gtt.FastPass
                 string[] segments = url.Split('?');
                 if (segments.Length > 1)
                 {
-                    query = "?" + segments[1];
+                    _query = "?" + segments[1];
                 }
 
-                paths.Add(TrimSlashes(segments[0]));
+                _paths.Add(TrimSlashes(segments[0]));
             }
 
             return new FastPassRequestBuilder(this);
@@ -74,15 +74,15 @@ namespace Gtt.FastPass
         {
             var ep = new FastPassEndpoint(BuildUrl()) { Options = Options };
             ep.WithTestIdentifier(testId ?? TestId);
-            ep.Name = ep.Name;
+            ep.Name = !string.IsNullOrWhiteSpace(testId) ? testId : ep.Name;
             return ep;
         }
 
         public string BuildUrl()
         {
-            var pathsWithContent = paths.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            var pathsWithContent = _paths.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
             string path = pathsWithContent.Count == 0 ? "" : "/" + string.Join("/", pathsWithContent);
-            var url = $"{protocol}://{host}:{port}{path}{query}";
+            var url = $"{_protocol}://{_host}:{_port}{path}{_query}";
             return url;
         }
 
