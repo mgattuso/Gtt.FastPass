@@ -71,7 +71,7 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Post);
         }
 
-        public FastPassResponse Post<T>(string path, T obj, bool resetPath = false)
+        public FastPassResponse PostWithBody<T>(string path, T obj, bool resetPath = false)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
@@ -80,7 +80,7 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Post);
         }
 
-        public FastPassResponse Post<T>(T obj)
+        public FastPassResponse PostWithBody<T>(T obj)
         {
             WithBody(obj);
             return Call(HttpMethod.Post);
@@ -94,7 +94,7 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Put);
         }
 
-        public FastPassResponse Put<T>(string path, T obj, bool resetPath)
+        public FastPassResponse PutWithBody<T>(string path, T obj, bool resetPath = false)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
@@ -103,7 +103,13 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Put);
         }
 
-        public FastPassResponse Put<T>(T obj)
+        /// <summary>
+        /// PUT using the object specified as the payload
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public FastPassResponse PutWithBody<T>(T obj)
         {
             WithBody(obj);
             return Call(HttpMethod.Put);
@@ -117,7 +123,7 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Delete);
         }
 
-        public FastPassResponse Delete<T>(string path, T obj, bool resetPath)
+        public FastPassResponse DeleteWithBody<T>(string path, T obj, bool resetPath)
         {
             WithBody(obj);
             if (!string.IsNullOrWhiteSpace(path))
@@ -126,7 +132,7 @@ namespace Gtt.FastPass
             return Call(HttpMethod.Delete);
         }
 
-        public FastPassResponse Delete<T>(T obj)
+        public FastPassResponse DeleteWithBody<T>(T obj)
         {
             WithBody(obj);
             return Call(HttpMethod.Delete);
