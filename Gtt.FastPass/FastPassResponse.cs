@@ -67,7 +67,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Status Code",
-                    Passed = passed,
+                    Label = passed ? ResultLabel.Pass : ResultLabel.Fail,
                     Actual = StatusCode.ToString(),
                     Expected = code.ToString()
                 });
@@ -77,7 +77,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Status Code",
-                    Passed = false,
+                    Label = ResultLabel.Fail,
                     Actual = StatusCode.ToString(),
                     Expected = ex.ToString()
                 });
@@ -96,7 +96,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Status Code",
-                    Passed = passed,
+                    Label = passed ? ResultLabel.Pass : ResultLabel.Fail,
                     Actual = StatusCode.ToString(),
                     Expected = code.ToString()
                 });
@@ -106,7 +106,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Status Code",
-                    Passed = false,
+                    Label = ResultLabel.Fail,
                     Actual = ex.ToString(),
                     Expected = code.ToString()
                 });
@@ -127,7 +127,7 @@ namespace Gtt.FastPass
 
             AddTestResult(new TestResult
             {
-                Passed = passes,
+                Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 Name = "Has Header",
                 Expected = header,
                 Actual = ""
@@ -169,7 +169,7 @@ namespace Gtt.FastPass
 
             AddTestResult(new TestResult
             {
-                Passed = passes,
+                Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 Name = "Has Header with Value",
                 Expected = $"{header}: {value}",
                 Actual = $"{actualHeader}: {actualValue}"
@@ -198,7 +198,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult()
                 {
                     Name = "Body " + name,
-                    Passed = passes
+                    Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 });
             }
             catch (Exception ex)
@@ -206,7 +206,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Body " + name,
-                    Passed = false,
+                    Label = ResultLabel.Fail,
                     Actual = ex.ToString()
                 });
             }
@@ -225,7 +225,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult()
                 {
                     Name = "Body " + name,
-                    Passed = passes
+                    Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 });
             }
             catch (Exception ex)
@@ -233,7 +233,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = "Body " + name,
-                    Passed = false,
+                    Label = ResultLabel.Fail,
                     Actual = ex.ToString()
                 });
             }
@@ -251,7 +251,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = name,
-                    Passed = passes
+                    Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 });
             }
             catch (Exception ex)
@@ -259,7 +259,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult()
                 {
                     Name = name,
-                    Passed = false,
+                    Label = ResultLabel.Fail,
                     Actual = ex.ToString()
                 });
             }
@@ -278,7 +278,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult
                 {
                     Name = name,
-                    Passed = passes
+                    Label = passes ? ResultLabel.Pass : ResultLabel.Fail,
                 });
             }
             catch (Exception ex)
@@ -286,7 +286,7 @@ namespace Gtt.FastPass
                 AddTestResult(new TestResult()
                 {
                     Name = name,
-                    Passed = false,
+                    Label =  ResultLabel.Fail,
                     Actual = ex.ToString()
                 });
             }
@@ -354,19 +354,34 @@ namespace Gtt.FastPass
                     actual = $"Actual: {result.Actual}";
 
                 var current = Console.ForegroundColor;
-                if (result.Passed)
+                switch (result.Label)
                 {
-                    using (var cw = new ConsoleWithColor(ConsoleColor.Green))
-                    {
-                        cw.Write("PASS:");
-                    }
-                }
-                else
-                {
-                    using (var cw = new ConsoleWithColor(ConsoleColor.Red))
-                    {
-                        cw.Write("FAIL:");
-                    }
+                    case ResultLabel.Fail:
+                        using (var cw = new ConsoleWithColor(ConsoleColor.Red))
+                        {
+                            cw.Write("FAIL:");
+                        }
+                        break;
+                    case ResultLabel.Pass:
+                        using (var cw = new ConsoleWithColor(ConsoleColor.Green))
+                        {
+                            cw.Write("PASS:");
+                        }
+                        break;
+                    case ResultLabel.Skip:
+                        using (var cw = new ConsoleWithColor(ConsoleColor.DarkMagenta))
+                        {
+                            cw.Write("SKIP:");
+                        }
+                        break;
+                    case ResultLabel.Warn:
+                        using (var cw = new ConsoleWithColor(ConsoleColor.Yellow))
+                        {
+                            cw.Write("WARN:");
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
 
                 Console.WriteLine($"  {result.Name} {expected} {actual}");
@@ -393,15 +408,25 @@ namespace Gtt.FastPass
 
         public FastPassResponse AssertMaxResponseTimeMs(long responseTime)
         {
+            var failedLabel =  this.Request.Endpoint.Options.WarnOnResponseTimeFailures ? ResultLabel.Warn : ResultLabel.Fail;
+            bool passed = ResponseTime <= responseTime;
             AddTestResult(new TestResult
             {
                 Name = "Max Response time",
-                Passed = ResponseTime <= responseTime,
+                Label = passed ? ResultLabel.Pass : failedLabel,
                 Actual = ResponseTime + "ms",
                 Expected = responseTime + "ms"
             });
 
             return this;
         }
+    }
+
+    public enum ResultLabel
+    {
+        Fail,
+        Pass,
+        Skip,
+        Warn
     }
 }

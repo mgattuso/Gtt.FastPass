@@ -13,6 +13,7 @@ namespace Gtt.FastPass.Sample
             var root = new FastPassEndpoint("http://deckofcardsapi.com:80", opts =>
             {
                 opts.PrintHttpContext = true;
+                opts.WarnOnResponseTimeFailures = true;
             });
             return FastPassTestRunner.RunAllTests(root);
         }

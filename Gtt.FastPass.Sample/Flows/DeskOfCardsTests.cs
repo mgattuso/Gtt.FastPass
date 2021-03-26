@@ -32,7 +32,7 @@ namespace Gtt.FastPass.Sample.Flows
                 })
                 .Get($"deck/{response.Deck_id}/draw/?count=2")
                 .AssertStatusCode(200)
-                .AssertMaxResponseTimeMs(1000)
+                .AssertMaxResponseTimeMs(2)
                 .WriteResults();
         }
 
