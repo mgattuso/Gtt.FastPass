@@ -26,7 +26,10 @@ namespace Gtt.FastPass.Sample.Flows
             DeckResponse response = null;
             test
                 .BaseCall()
-                .DependentOn(ShuffleDeck, x => response = x)
+                .DependentOn(ShuffleDeck, x =>
+                {
+                    response = x.Response;
+                })
                 .Get($"deck/{response.Deck_id}/draw/?count=2")
                 .AssertStatusCode(200)
                 .AssertMaxResponseTimeMs(1000)
@@ -34,7 +37,7 @@ namespace Gtt.FastPass.Sample.Flows
         }
 
         [ApiTest]
-        public DeckResponse ShuffleDeck(FastPassEndpoint test)
+        public ReqRes<string, DeckResponse> ShuffleDeck(FastPassEndpoint test)
         {
             return test
                 .BaseCall()
@@ -43,7 +46,7 @@ namespace Gtt.FastPass.Sample.Flows
                 .AssertMaxResponseTimeMs(1000)
                 .AssertBody<DeckResponse>("Contains deck_id", x => !string.IsNullOrWhiteSpace(x.Deck_id))
                 .WriteResults()
-                .ReturnBody<DeckResponse>();
+                .ReturnContext<string,DeckResponse>();
         }
 
 

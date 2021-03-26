@@ -23,11 +23,19 @@ namespace Gtt.FastPass
 
         public T ResAs<T>()
         {
+            if (string.IsNullOrWhiteSpace(Content))
+            {
+                return default(T);
+            }
             return new JsonObjectSerializer(true).Deserialize<T>(Content).GetAwaiter().GetResult();
         }
 
         public T ReqAs<T>()
         {
+            if (string.IsNullOrWhiteSpace(Request.Content))
+            {
+                return default(T);
+            }
             return new JsonObjectSerializer(true).Deserialize<T>(Request.Content).GetAwaiter().GetResult();
         }
 
@@ -369,19 +377,14 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public T ReturnBody<T>()
+        public T ReturnResponse<T>()
         {
             return ResAs<T>();
         }
 
-        public (TRequest Request, TResponse Response) ReturnBody<TRequest, TResponse>()
+        public ReqRes<TRequest, TResponse> ReturnContext<TRequest, TResponse>()
         {
-            return (ReqAs<TRequest>(), ResAs<TResponse>());
-        }
-
-        public RequestResponse<TRequest, TResponse> ReturnContext<TRequest, TResponse>()
-        {
-            return new RequestResponse<TRequest, TResponse>
+            return new ReqRes<TRequest, TResponse>
             {
                 Request = ReqAs<TRequest>(),
                 Response = ResAs<TResponse>()
@@ -400,11 +403,5 @@ namespace Gtt.FastPass
 
             return this;
         }
-    }
-
-    public class RequestResponse<TReq, TRes>
-    {
-        public TReq Request { get; set; }
-        public TRes Response { get; set; }
     }
 }
