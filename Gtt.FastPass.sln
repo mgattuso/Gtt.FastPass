@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gtt.FastPass", "Gtt.FastPass\Gtt.FastPass.csproj", "{70D8DD3E-21CB-431D-A0CA-F1068683753D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gtt.FastPass.Sample", "Gtt.FastPass.Sample\Gtt.FastPass.Sample.csproj", "{5E510976-6DF4-4A58-A238-4E7A886F9E6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gtt.FastPass.Sample", "Gtt.FastPass.Sample\Gtt.FastPass.Sample.csproj", "{5E510976-6DF4-4A58-A238-4E7A886F9E6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gtt.FastPass.Gui", "Gtt.FastPass.Gui\Gtt.FastPass.Gui.csproj", "{CD9A5339-B4A3-4342-A541-764D026C7B25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{5E510976-6DF4-4A58-A238-4E7A886F9E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E510976-6DF4-4A58-A238-4E7A886F9E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E510976-6DF4-4A58-A238-4E7A886F9E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD9A5339-B4A3-4342-A541-764D026C7B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD9A5339-B4A3-4342-A541-764D026C7B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD9A5339-B4A3-4342-A541-764D026C7B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD9A5339-B4A3-4342-A541-764D026C7B25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

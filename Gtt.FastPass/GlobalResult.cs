@@ -21,6 +21,7 @@ namespace Gtt.FastPass
         public FastPassResponse TestResult => EndPoint?.Response;
         public FastPassEndpoint EndPoint { get; set; }
         public Exception Exception { get; set; }
+        public string File { get; set; }
 
         public void Execute()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,12 +8,6 @@ using Gtt.FastPass.Attributes;
 
 namespace Gtt.FastPass
 {
-    public class TestRepository
-    {
-        public List<TestDefinition> Tests { get; set; } = new List<TestDefinition>();
-        public List<MethodInfo> WarmUpMethods { get; set; } = new List<MethodInfo>();
-    }
-
     public static class FastPassTestRunner
     {
         private static readonly TestRepository Repository = new TestRepository();
@@ -47,12 +42,17 @@ namespace Gtt.FastPass
                             $"Cannot call test {name} with the parameters defined. Should take a single argument of the type 'FastPassEndpoint'");
                     }
 
+                    var w = Activator.CreateInstance(test.DeclaringType);
+                    var x = new StackTrace(true);
+                    var file = x.GetFrames();
+
                     Repository.Tests.Add(new TestDefinition
                     {
                         Key = testReference,
                         TestClass = t,
                         TestMethod = test,
-                        EndPoint = endpoint
+                        EndPoint = endpoint,
+                        File = file.ToString()
                     });
                 }
 
@@ -81,11 +81,13 @@ namespace Gtt.FastPass
             GlobalResults.PassedTests = 0;
         }
 
-
         public static int RunAllTests(FastPassEndpoint root)
         {
             CollectTests(root);
-            RunWarmUps(root);
+            if (!root.Options.SkipWarmupTests)
+            {
+                RunWarmUps(root);
+            }
 
             GlobalResults.Tests = Repository.Tests.ToDictionary(x => x.Key);
 
@@ -114,5 +116,6 @@ namespace Gtt.FastPass
         public bool PrintHttpContext { get; set; }
         public bool WarnOnResponseTimeFailures { get; set; }
         public int HttpConnectionTimeoutSeconds { get; set; } = 100;
+        public bool SkipWarmupTests { get; set; }
     }
 }

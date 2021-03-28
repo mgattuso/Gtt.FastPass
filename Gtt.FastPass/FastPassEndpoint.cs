@@ -14,6 +14,7 @@ namespace Gtt.FastPass
         private readonly List<string> _paths = new List<string>();
         public TestOptions Options { get; internal set; } = new TestOptions();
         public string Name { get; internal set; }
+        public bool SkipTest { get; internal set; }
 
         public FastPassEndpoint(string root, Action<TestOptions> opts = null)
         {
