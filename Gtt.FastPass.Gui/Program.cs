@@ -85,7 +85,7 @@ namespace Gtt.FastPass.Gui
             var btn = new Button(1, 1, "Run all tests", is_default: true);
             btn.Clicked += () =>
             {
-                FastPassTestRunner.RunWarmUps(new FastPassEndpoint("http://deckofcardsapi.com:80"));
+                new FastPassTestRunner().RunWarmUps(new FastPassEndpoint("http://deckofcardsapi.com:80"));
             };
             return btn;
         }

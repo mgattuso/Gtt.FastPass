@@ -191,8 +191,8 @@ namespace Gtt.FastPass
         {
             var otherMethod = otherCall.GetMethodInfo();
             var otherClass = otherMethod.DeclaringType;
-            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.TestId];
-            TestDefinition dependencyDefinition = GlobalResults.Tests[$"{otherClass.Name}:{otherMethod.Name}"];
+            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.SessionId][Endpoint.TestId];
+            TestDefinition dependencyDefinition = GlobalResults.Tests[Endpoint.SessionId][$"{otherClass.Name}:{otherMethod.Name}"];
             string dependencyKey = currentDefinition.Key + "-" + dependencyDefinition.Key;
             string currentKey = dependencyDefinition.Key + "-" + currentDefinition.Key;
             if (_dependencies.Contains(currentKey))
@@ -202,7 +202,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute();
+                dependencyDefinition.Execute(Endpoint.SessionId);
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
@@ -228,8 +228,8 @@ namespace Gtt.FastPass
         {
             var otherMethod = otherCall.GetMethodInfo();
             var otherClass = otherMethod.DeclaringType;
-            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.TestId];
-            TestDefinition dependencyDefinition = GlobalResults.Tests[$"{otherClass.Name}:{otherMethod.Name}"];
+            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.SessionId][Endpoint.TestId];
+            TestDefinition dependencyDefinition = GlobalResults.Tests[Endpoint.SessionId][$"{otherClass.Name}:{otherMethod.Name}"];
             string dependencyKey = currentDefinition.Key + "-" + dependencyDefinition.Key;
             string currentKey = dependencyDefinition.Key + "-" + currentDefinition.Key;
             if (_dependencies.Contains(currentKey))
@@ -239,7 +239,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute();
+                dependencyDefinition.Execute(Endpoint.SessionId);
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
@@ -271,8 +271,8 @@ namespace Gtt.FastPass
         {
             var otherMethod = otherCall.GetMethodInfo();
             var otherClass = otherMethod.DeclaringType;
-            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.TestId];
-            TestDefinition dependencyDefinition = GlobalResults.Tests[$"{otherClass.Name}:{otherMethod.Name}"];
+            TestDefinition currentDefinition = GlobalResults.Tests[Endpoint.SessionId][Endpoint.TestId];
+            TestDefinition dependencyDefinition = GlobalResults.Tests[Endpoint.SessionId][$"{otherClass.Name}:{otherMethod.Name}"];
             string dependencyKey = currentDefinition.Key + "-" + dependencyDefinition.Key;
             string currentKey = dependencyDefinition.Key + "-" + currentDefinition.Key;
             if (_dependencies.Contains(currentKey))
@@ -282,7 +282,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute();
+                dependencyDefinition.Execute(Endpoint.SessionId);
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)

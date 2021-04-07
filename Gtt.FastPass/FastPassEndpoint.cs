@@ -15,6 +15,7 @@ namespace Gtt.FastPass
         public TestOptions Options { get; internal set; } = new TestOptions();
         public string Name { get; internal set; }
         public bool SkipTest { get; internal set; }
+        public Guid SessionId { get; internal set; }
 
         public FastPassEndpoint(string root, Action<TestOptions> opts = null)
         {
@@ -71,11 +72,12 @@ namespace Gtt.FastPass
             return new FastPassRequestBuilder(this, Options);
         }
 
-        public FastPassEndpoint Clone(string testId = null)
+        public FastPassEndpoint Clone(string testId = null, Guid? sessionId = null)
         {
             var ep = new FastPassEndpoint(BuildUrl()) { Options = Options };
             ep.WithTestIdentifier(testId ?? TestId);
             ep.Name = !string.IsNullOrWhiteSpace(testId) ? testId : ep.Name;
+            ep.SessionId = sessionId ?? SessionId;
             return ep;
         }
 

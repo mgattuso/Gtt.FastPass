@@ -7,9 +7,7 @@ namespace Gtt.FastPass
 {
     public static class GlobalResults
     {
-        public static int FailedTests;
-        public static int PassedTests;
-        public static Dictionary<string, TestDefinition> Tests = new Dictionary<string, TestDefinition>();
+        public static Dictionary<Guid, Dictionary<string, TestDefinition>> Tests = new Dictionary<Guid, Dictionary<string, TestDefinition>>();
     }
 
     public class TestDefinition
@@ -23,7 +21,7 @@ namespace Gtt.FastPass
         public Exception Exception { get; set; }
         public string File { get; set; }
 
-        public void Execute()
+        public void Execute(Guid session)
         {
             var test = TestMethod;
             var suite = Activator.CreateInstance(TestClass);
@@ -39,7 +37,7 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                GlobalResults.Tests[Key].Exception = ex;
+                GlobalResults.Tests[session][Key].Exception = ex;
             }
         }
     }

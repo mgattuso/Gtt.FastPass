@@ -180,11 +180,6 @@ namespace Gtt.FastPass
 
         private void AddTestResult(TestResult result)
         {
-            if (result.Passed)
-                Interlocked.Increment(ref GlobalResults.PassedTests);
-            else
-                Interlocked.Increment(ref GlobalResults.FailedTests);
-
             Results.Add(result);
         }
 
