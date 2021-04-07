@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -7,7 +8,7 @@ namespace Gtt.FastPass
 {
     public static class GlobalResults
     {
-        public static Dictionary<Guid, Dictionary<string, TestDefinition>> Tests = new Dictionary<Guid, Dictionary<string, TestDefinition>>();
+        public static ConcurrentDictionary<Guid, Dictionary<string, TestDefinition>> Tests = new ConcurrentDictionary<Guid, Dictionary<string, TestDefinition>>();
     }
 
     public class TestDefinition

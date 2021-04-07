@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Gtt.FastPass.Sample.Flows;
 
 namespace Gtt.FastPass.Sample
@@ -16,10 +18,19 @@ namespace Gtt.FastPass.Sample
                 opts.WarnOnResponseTimeFailures = true;
                 opts.HttpConnectionTimeoutSeconds = 60 * 20; // 20 mins for local development
             });
-            var tests = GlobalResults.Tests;
-            var t1 = new FastPassTestRunner().RunAllTests(root);
-            var t2 = new FastPassTestRunner().RunAllTests(root);
-            return t1 + t2;
+
+            int counter = 0;
+
+            Parallel.For(0, 1, new ParallelOptions
+            {
+                MaxDegreeOfParallelism = 8
+            }, idx =>
+            {
+                int errors = new FastPassTestRunner().RunAllTests(root);
+                Interlocked.Add(ref counter, errors);
+            });
+
+            return counter;
         }
     }
 
