@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Gtt.FastPass.Sample.Models;
+using Gtt.FastPass.Serializers;
+using NStack;
 using Terminal.Gui;
 
 namespace Gtt.FastPass.Gui
@@ -55,10 +59,35 @@ namespace Gtt.FastPass.Gui
             //    Width = Dim.Width(loginText)
             //};
 
-            win.Add(
-                RunAllTests(),
-                new CheckBox(1, 2, "Run all Tests")
-            );
+            var runner = new FastPassTestRunner<TestModel>(new FastPassEndpoint("http://deckofcardsapi.com:80"));
+            var testsByController = runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
+
+            for (int i = 0; i < testsByController.Count; i++)
+            {
+                var group = testsByController[i];
+                win.Add(new Label(1, 1, group.Key));
+                var gl = group.ToList();
+                for (int j = 0; j < gl.Count; j++)
+                {
+                    var test = gl[j];
+                    var btn = new Button(i, j + 2, test.TestMethod.Name);
+                    btn.Clicked += () =>
+                    {
+                        FastPassResponse result = test.Execute();
+                        if (result.AllTestsPassed && !btn.Text.EndsWith("PASS"))
+                        {
+                            btn.Text = btn.Text + " PASS";
+                        }
+                        WriteResponse(result, win);
+                    };
+                    win.Add(btn);
+                }
+
+            }
+
+            //win.Add(
+            //    RunAllTests()
+            //);
 
             // Add some controls, 
             //win.Add(
@@ -75,6 +104,17 @@ namespace Gtt.FastPass.Gui
             Application.Run();
         }
 
+        private static void WriteResponse(FastPassResponse result, Window win)
+        {
+            var f = new FrameView(new Rect(25, 1, 300, 400), result.Request.Endpoint.Name);
+            f.Visible = true;
+            f.Add(new Label(0, 0, $"{result.Request.Method} {result.Request.Endpoint.BuildUrl()}"));
+            f.Add(new Label(0, 1, $"{new JsonObjectSerializer(true).Pretty(result.Request.Content)}"));
+            f.Add(new Label(0, 2, $"{result.StatusCode}"));
+            f.Add(new Label(0, 3, $"{new JsonObjectSerializer(true).Pretty(result.Content)}"));
+            win.Add(f);
+        }
+
         private static void Restart()
         {
             Console.WriteLine("Restarting");
@@ -85,7 +125,7 @@ namespace Gtt.FastPass.Gui
             var btn = new Button(1, 1, "Run all tests", is_default: true);
             btn.Clicked += () =>
             {
-                new FastPassTestRunner().RunWarmUps(new FastPassEndpoint("http://deckofcardsapi.com:80"));
+                new FastPassTestRunner<TestModel>(new FastPassEndpoint("http://deckofcardsapi.com:80")).RunWarmUps();
             };
             return btn;
         }

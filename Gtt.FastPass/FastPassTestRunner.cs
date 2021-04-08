@@ -8,19 +8,34 @@ using Gtt.FastPass.Attributes;
 
 namespace Gtt.FastPass
 {
-    public class FastPassTestRunner
+    public class FastPassTestRunner<T>
     {
+        private readonly FastPassEndpoint _root;
         private readonly TestRepository _repository = new TestRepository();
         private readonly Guid _session = Guid.NewGuid();
 
-        public FastPassTestRunner()
+        public FastPassTestRunner(FastPassEndpoint root)
         {
+            _root = root;
+            _root.SessionId = _session;
             GlobalResults.Tests[_session] = new Dictionary<string, TestDefinition>();
+            CollectTests();
         }
 
-        public void CollectTests(FastPassEndpoint root)
+        private void CollectTests()
         {
-            var types = AppDomain.CurrentDomain.GetAssemblies().SelectMany(GetTypesWithHelpAttribute);
+            var assemblies = typeof(T).Assembly.GetReferencedAssemblies().ToList();
+            assemblies.Add(typeof(T).Assembly.GetName());
+            var asf = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var a in asf)
+            {
+                if (assemblies.All(x => x.FullName != a.FullName))
+                {
+                    assemblies.Add(a.GetName());
+                }
+            }
+
+            var types = assemblies.Distinct().Select(Assembly.Load).SelectMany(GetTypesWithApiAttribute);
 
             foreach (var t in types)
             {
@@ -38,7 +53,7 @@ namespace Gtt.FastPass
                         ? $"{testAttr.Name} ({test.Name})"
                         : test.Name;
                     string testReference = $"{t.Name}:{test.Name}";
-                    var endpoint = root.Clone(testReference, _session);
+                    var endpoint = _root.Clone(testReference, _session);
                     endpoint.Name = testName;
 
                     var p = test.GetParameters();
@@ -69,32 +84,35 @@ namespace Gtt.FastPass
                     _repository.WarmUpMethods.Add(warmUp);
                 }
             }
+
+            GlobalResults.Tests[_session] = _repository.Tests.ToDictionary(x => x.Key);
         }
 
-        public void RunWarmUps(FastPassEndpoint root)
+        public void RunWarmUps()
         {
             foreach (var warmUp in _repository.WarmUpMethods)
             {
                 var w = Activator.CreateInstance(warmUp.DeclaringType);
                 Console.WriteLine($"Running warm up: {warmUp.DeclaringType.Name}:{warmUp.Name}");
-                warmUp.Invoke(w, new object[] { root.Clone($"WARMUP {warmUp.DeclaringType.Name}-{warmUp.Name}", _session) });
+                warmUp.Invoke(w, new object[] { _root.Clone($"WARMUP {warmUp.DeclaringType.Name}-{warmUp.Name}", _session) });
             }
         }
 
-        public int RunAllTests(FastPassEndpoint root)
+        public List<TestDefinition> GetTests()
         {
-            root.SessionId = _session;
-            CollectTests(root);
-            if (!root.Options.SkipWarmupTests)
+            return _repository.Tests;
+        }
+
+        public int RunAllTests()
+        {
+            if (!_root.Options.SkipWarmupTests)
             {
-                RunWarmUps(root);
+                RunWarmUps();
             }
 
-            GlobalResults.Tests[_session] = _repository.Tests.ToDictionary(x => x.Key);
-            
             foreach (var testDefinition in GlobalResults.Tests[_session])
             {
-                testDefinition.Value.Execute(_session);
+                testDefinition.Value.Execute();
             }
 
             var failedTests = GlobalResults.Tests[_session].Sum(x => x.Value.TestResult.Results.Count(c => !c.Passed));
@@ -102,7 +120,7 @@ namespace Gtt.FastPass
             return failedTests > 0 ? -1 : 0;
         }
 
-        private static IEnumerable<Type> GetTypesWithHelpAttribute(Assembly assembly)
+        private static IEnumerable<Type> GetTypesWithApiAttribute(Assembly assembly)
         {
             foreach (Type type in assembly.GetTypes())
             {

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtt.FastPass.Sample.Flows;
+using Gtt.FastPass.Sample.Models;
 
 namespace Gtt.FastPass.Sample
 {
@@ -26,7 +27,7 @@ namespace Gtt.FastPass.Sample
                 MaxDegreeOfParallelism = 8
             }, idx =>
             {
-                int errors = new FastPassTestRunner().RunAllTests(root);
+                int errors = new FastPassTestRunner<TestModel>(root).RunAllTests();
                 Interlocked.Add(ref counter, errors);
             });
 

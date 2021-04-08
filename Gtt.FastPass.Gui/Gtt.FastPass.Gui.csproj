@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Gtt.FastPass.Sample\Gtt.FastPass.Sample.csproj" />
     <ProjectReference Include="..\Gtt.FastPass\Gtt.FastPass.csproj" />
   </ItemGroup>
 

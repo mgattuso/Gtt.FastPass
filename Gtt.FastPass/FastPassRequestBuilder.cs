@@ -202,7 +202,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute(Endpoint.SessionId);
+                dependencyDefinition.Execute();
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
@@ -239,7 +239,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute(Endpoint.SessionId);
+                dependencyDefinition.Execute();
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)
@@ -282,7 +282,7 @@ namespace Gtt.FastPass
             _dependencies.Add(dependencyKey);
             if (!dependencyDefinition.TestHasBeenRun)
             {
-                dependencyDefinition.Execute(Endpoint.SessionId);
+                dependencyDefinition.Execute();
             }
 
             if (dependencyDefinition.TestResult != null && dependencyDefinition.TestResult.AllTestsPassed)

@@ -6,20 +6,21 @@ namespace Gtt.FastPass
 {
     public class ConsoleWithColor : IDisposable
     {
-        private ConsoleColor currentForeground;
-        private ConsoleColor currentBackground;
+        private readonly ConsoleColor _currentForeground;
+        private readonly ConsoleColor _currentBackground;
+        private readonly StringBuilder _sb = new StringBuilder();
         public ConsoleWithColor(ConsoleColor color)
         {
-            currentForeground = Console.ForegroundColor;
-            currentBackground = Console.BackgroundColor;
+            _currentForeground = Console.ForegroundColor;
+            _currentBackground = Console.BackgroundColor;
 
             Console.ForegroundColor = color;
         }
 
         public ConsoleWithColor(ConsoleColor foregroundColor, ConsoleColor backgroundColor)
         {
-            currentForeground = Console.ForegroundColor;
-            currentBackground = Console.BackgroundColor;
+            _currentForeground = Console.ForegroundColor;
+            _currentBackground = Console.BackgroundColor;
 
             Console.ForegroundColor = foregroundColor;
             Console.BackgroundColor = backgroundColor;
@@ -27,16 +28,19 @@ namespace Gtt.FastPass
 
         public void WriteLine()
         {
+            _sb.AppendLine();
             Console.WriteLine();
         }
 
         public void WriteLine(string message)
         {
+            _sb.AppendLine(message);
             Console.WriteLine(message);
         }
 
         public void Write(string message)
         {
+            _sb.Append(message);
             Console.Write(message);
         }
 
@@ -50,8 +54,8 @@ namespace Gtt.FastPass
 
         public void Dispose()
         {
-            Console.BackgroundColor = currentBackground;
-            Console.ForegroundColor = currentForeground;
+            Console.BackgroundColor = _currentBackground;
+            Console.ForegroundColor = _currentForeground;
         }
     }
 }

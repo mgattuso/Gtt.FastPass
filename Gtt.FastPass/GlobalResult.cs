@@ -22,7 +22,7 @@ namespace Gtt.FastPass
         public Exception Exception { get; set; }
         public string File { get; set; }
 
-        public void Execute(Guid session)
+        public FastPassResponse Execute()
         {
             var test = TestMethod;
             var suite = Activator.CreateInstance(TestClass);
@@ -38,8 +38,10 @@ namespace Gtt.FastPass
             }
             catch (Exception ex)
             {
-                GlobalResults.Tests[session][Key].Exception = ex;
+                GlobalResults.Tests[EndPoint.SessionId][Key].Exception = ex;
             }
+
+            return GlobalResults.Tests[EndPoint.SessionId][Key].TestResult;
         }
     }
 }
