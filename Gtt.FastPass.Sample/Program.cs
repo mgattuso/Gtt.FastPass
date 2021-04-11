@@ -20,7 +20,8 @@ namespace Gtt.FastPass.Sample
                 opts.HttpConnectionTimeoutSeconds = 60 * 20; // 20 mins for local development
             });
 
-            new FastPassTestRunner<TestModel>(root).RunAsGui();
+            new GuiRunner<TestModel>(root).Run();
+            //new FastPassTestRunner<TestModel>(root).RunAsGui();
             return 0;
 
             int counter = 0;

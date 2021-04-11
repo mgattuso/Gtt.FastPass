@@ -120,11 +120,6 @@ namespace Gtt.FastPass
             return failedTests > 0 ? -1 : 0;
         }
 
-        public void RunAsGui()
-        {
-            new GuiRunner<T>(this).Run();
-        }
-
         private static IEnumerable<Type> GetTypesWithApiAttribute(Assembly assembly)
         {
             foreach (Type type in assembly.GetTypes())

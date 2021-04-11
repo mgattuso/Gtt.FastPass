@@ -10,26 +10,29 @@ namespace Gtt.FastPass
 {
     public class GuiRunner<T>
     {
-        private readonly FastPassTestRunner<T> _runner;
+        private readonly FastPassEndpoint _endpoint;
+        FastPassResponse _currentResult;
 
-        public GuiRunner(FastPassTestRunner<T> runner)
+        public GuiRunner(FastPassEndpoint endpoint)
         {
-            _runner = runner;
+            _endpoint = endpoint.Clone();
         }
 
         public void Run()
         {
             Application.Init();
-            var top = Application.Top;
-            FastPassResponse currentResult = null;
+            Paint();
+        }
 
-            // Creates the top-level window to show
+        public void Paint()
+        {
+            var top = Application.Top;
+            top.RemoveAll();
+
             var win = new Window("Fast Pass API Test Runner")
             {
                 X = 0,
-                Y = 1, // Leave one row for the toplevel menu
-
-                // By using Dim.Fill(), it will automatically resize without manual intervention
+                Y = 1,
                 Width = Dim.Fill(),
                 Height = Dim.Fill()
             };
@@ -38,7 +41,7 @@ namespace Gtt.FastPass
 
             var menu = new MenuBar(new[] {
                 new MenuBarItem ("_Main Menu", new[] {
-                    //new MenuItem ("_Close", "", () => Close ()),
+                    new MenuItem ("_Restart", "", Paint),
                     new MenuItem ("_Quit", "", () =>
                     {
                         top.Running = false;
@@ -66,10 +69,12 @@ namespace Gtt.FastPass
             var resultsBtn = new Button(0, 0, "Results");
             var requestBtn = new Button(12, 0, "Request");
             var responseBtn = new Button(24, 0, "Response");
+            var repeatBtn = new Button(36, 0, "Repeat");
 
             rightFrame.Add(resultsBtn);
             rightFrame.Add(requestBtn);
             rightFrame.Add(responseBtn);
+            rightFrame.Add(repeatBtn);
 
             var resultText = new TextView
             {
@@ -78,9 +83,12 @@ namespace Gtt.FastPass
                 Y = 2
             };
 
-            resultsBtn.Clicked += () => WriteResponse(currentResult, resultText, "");
-            requestBtn.Clicked += () => WriteResponse(currentResult, resultText, "req");
-            responseBtn.Clicked += () => WriteResponse(currentResult, resultText, "res");
+            var runner = new FastPassTestRunner<T>(_endpoint.Clone());
+
+            resultsBtn.Clicked += () => WriteResponse(_currentResult, resultText, "");
+            requestBtn.Clicked += () => WriteResponse(_currentResult, resultText, "req");
+            responseBtn.Clicked += () => WriteResponse(_currentResult, resultText, "res");
+            repeatBtn.Clicked += Paint;
 
 
             rightFrame.Add(resultText);
@@ -89,7 +97,8 @@ namespace Gtt.FastPass
             win.Add(rightFrame);
 
 
-            var testsByController = _runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
+
+            var testsByController = runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
             int currentRow = 0;
             foreach (var @group in testsByController)
             {
@@ -108,7 +117,7 @@ namespace Gtt.FastPass
                             btn.Text = btn.Text + " PASS";
                         }
 
-                        currentResult = result;
+                        _currentResult = result;
                         WriteResponse(result, resultText);
                     };
                     leftFrame.Add(btn);

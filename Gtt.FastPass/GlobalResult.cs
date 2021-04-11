@@ -22,7 +22,7 @@ namespace Gtt.FastPass
         public Exception Exception { get; set; }
         public string File { get; set; }
 
-        public FastPassResponse Execute()
+        public FastPassResponse Execute(bool forceRepeat = false)
         {
             var test = TestMethod;
             var suite = Activator.CreateInstance(TestClass);
@@ -31,7 +31,7 @@ namespace Gtt.FastPass
 
             try
             {
-                if (!TestHasBeenRun)
+                if (!TestHasBeenRun || forceRepeat)
                 {
                     test.Invoke(suite, new object[] { testRoot });
                 }
