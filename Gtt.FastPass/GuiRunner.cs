@@ -17,7 +17,7 @@ namespace Gtt.FastPass
             _runner = runner;
         }
 
-        public  void Run()
+        public void Run()
         {
             Application.Init();
             var top = Application.Top;
@@ -90,19 +90,19 @@ namespace Gtt.FastPass
 
 
             var testsByController = _runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
-
-            for (int i = 0; i < testsByController.Count; i++)
+            int currentRow = 0;
+            foreach (var @group in testsByController)
             {
-                var group = testsByController[i];
-                win.Add(new Label(1, 1, group.Key));
-                var gl = group.ToList();
-                for (int j = 0; j < gl.Count; j++)
+                leftFrame.Add(new Label(1, currentRow, @group.Key));
+                var gl = @group.ToList();
+                foreach (var test in gl)
                 {
-                    var test = gl[j];
-                    var btn = new Button(i, j + 2, test.TestMethod.Name);
+                    currentRow++;
+                    var btn = new Button(1, currentRow, test.TestMethod.Name);
+                    var test1 = test;
                     btn.Clicked += () =>
                     {
-                        FastPassResponse result = test.Execute();
+                        FastPassResponse result = test1.Execute();
                         if (result.AllTestsPassed && !btn.Text.EndsWith("PASS"))
                         {
                             btn.Text = btn.Text + " PASS";
@@ -113,6 +113,9 @@ namespace Gtt.FastPass
                     };
                     leftFrame.Add(btn);
                 }
+
+                currentRow++;
+                currentRow++;
             }
 
             Application.Run();
