@@ -1,18 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
-using Gtt.FastPass.Sample.Models;
 using Gtt.FastPass.Serializers;
-using NStack;
 using Terminal.Gui;
 
-namespace Gtt.FastPass.Gui
+namespace Gtt.FastPass
 {
-    class Program
+    public class GuiRunner<T>
     {
-        static void Main(string[] args)
+        private readonly FastPassTestRunner<T> _runner;
+
+        public GuiRunner(FastPassTestRunner<T> runner)
+        {
+            _runner = runner;
+        }
+
+        public  void Run()
         {
             Application.Init();
             var top = Application.Top;
@@ -33,7 +38,6 @@ namespace Gtt.FastPass.Gui
 
             var menu = new MenuBar(new[] {
                 new MenuBarItem ("_Main Menu", new[] {
-                    new MenuItem ("_Restart","", Restart),
                     //new MenuItem ("_Close", "", () => Close ()),
                     new MenuItem ("_Quit", "", () =>
                     {
@@ -84,11 +88,8 @@ namespace Gtt.FastPass.Gui
             win.Add(leftFrame);
             win.Add(rightFrame);
 
-            var runner = new FastPassTestRunner<TestModel>(new FastPassEndpoint("http://deckofcardsapi.com:80", opts =>
-            {
-                opts.WarnOnResponseTimeFailures = true;
-            }));
-            var testsByController = runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
+
+            var testsByController = _runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
 
             for (int i = 0; i < testsByController.Count; i++)
             {
@@ -193,11 +194,6 @@ namespace Gtt.FastPass.Gui
 
 
             text.Text = sb.Replace("\r", "").ToString();
-        }
-
-        private static void Restart()
-        {
-            Console.WriteLine("Restarting");
         }
     }
 }
