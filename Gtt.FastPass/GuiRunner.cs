@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Gtt.FastPass.Serializers;
 using Terminal.Gui;
 
@@ -113,9 +115,24 @@ namespace Gtt.FastPass
                     var test1 = test;
                     btn.Clicked += () =>
                     {
-                        lbl.Text = "R";
-                        FastPassResponse result = test1.Execute();
-                        
+                        lbl.Text = "/";
+                        int running = 1;
+                        FastPassResponse result = null;
+                        Task.Run(() =>
+                        {
+                            result = test1.Execute();
+                            Interlocked.Decrement(ref running);
+                        });
+                        int iterations = 0;
+                        string sprite = "/-\\|";
+                        while (running > 0)
+                        {
+                            lbl.Text = sprite[iterations % 4].ToString();
+                            Application.Refresh();
+                            Task.Delay(200).Wait();
+                            iterations++;
+                        }
+
                         //lbl.Text = result.AllTestsPassed ? "P" : "X";
 
                         foreach (var label in _labels)
