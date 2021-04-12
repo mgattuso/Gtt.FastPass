@@ -12,6 +12,7 @@ namespace Gtt.FastPass
     {
         private readonly FastPassEndpoint _endpoint;
         FastPassResponse _currentResult;
+        private Dictionary<Label, TestDefinition> _labels = new Dictionary<Label, TestDefinition>();
 
         public GuiRunner(FastPassEndpoint endpoint)
         {
@@ -54,7 +55,7 @@ namespace Gtt.FastPass
             {
                 Visible = true,
                 Height = Dim.Fill(),
-                Width = 30
+                Width = 40
             };
 
             var rightFrame = new FrameView()
@@ -107,19 +108,29 @@ namespace Gtt.FastPass
                 foreach (var test in gl)
                 {
                     currentRow++;
-                    var btn = new Button(1, currentRow, test.TestMethod.Name);
+                    var lbl = new Label(1, currentRow, "");
+                    var btn = new Button(3, currentRow, test.TestMethod.Name);
                     var test1 = test;
                     btn.Clicked += () =>
                     {
+                        lbl.Text = "R";
                         FastPassResponse result = test1.Execute();
-                        if (result.AllTestsPassed && !btn.Text.EndsWith("PASS"))
+                        
+                        //lbl.Text = result.AllTestsPassed ? "P" : "X";
+
+                        foreach (var label in _labels)
                         {
-                            btn.Text = btn.Text + " PASS";
+                            if (label.Value.TestHasBeenRun)
+                            {
+                                label.Key.Text = label.Value.TestResult.AllTestsPassed ? "P" : "X";
+                            }
                         }
 
                         _currentResult = result;
                         WriteResponse(result, resultText);
                     };
+                    _labels[lbl] = test;
+                    leftFrame.Add(lbl);
                     leftFrame.Add(btn);
                 }
 
