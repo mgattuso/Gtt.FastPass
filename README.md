@@ -81,3 +81,23 @@ The following optional request options can be set
 .WithHeader(<name>, <value>)
 ```
 Provide a headers values
+
+## Executing the Tests
+
+Run the application in GUI mode will display a UI similar to below with all of the test suites and test
+
+![image-01](https://user-images.githubusercontent.com/117015/115127743-e75dbe00-9fa6-11eb-97dd-81b28bd7ef36.PNG)
+
+Click on test case to run it. Once the test completes each test case will return the status of PASS, FAIL, or WARN
+
+![image-02](https://user-images.githubusercontent.com/117015/115127815-99958580-9fa7-11eb-9385-6d457f51059e.PNG)
+
+Click the **request** tab to view the request details
+![image-03](https://user-images.githubusercontent.com/117015/115127830-be89f880-9fa7-11eb-841f-5af1356e89c7.PNG)
+
+Click the **response** tab to iew the response details
+
+![image-04](https://user-images.githubusercontent.com/117015/115127847-d3668c00-9fa7-11eb-9215-91c231ef3f94.PNG)
+
+
+
