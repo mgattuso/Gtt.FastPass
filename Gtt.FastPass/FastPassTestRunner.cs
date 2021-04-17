@@ -97,12 +97,17 @@ namespace Gtt.FastPass
             }
         }
 
-        public List<TestDefinition> GetTests()
+        internal List<TestDefinition> GetTests()
         {
             return _repository.Tests;
         }
 
-        public int RunAllTests()
+        public static void RunAsGui(FastPassEndpoint root)
+        {
+            new GuiRunner<T>(root).Run();
+        }
+
+        public int RunHeadless()
         {
             if (!_root.Options.SkipWarmupTests)
             {

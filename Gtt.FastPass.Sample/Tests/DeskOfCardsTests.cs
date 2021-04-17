@@ -6,9 +6,9 @@ namespace Gtt.FastPass.Sample.Tests
     public class DeckOfCardsTests
     {
         [ApiTest]
-        public ReqRes<string, DeckResponse> ShuffleDeck(FastPassEndpoint test)
+        public void ShuffleDeck(FastPassEndpoint test)
         {
-            return test
+            test
                 .Endpoint("api")
                 .WithHeader("Content-Type", "application/json")
                 .WithHeader("Accepts", "application/json")
@@ -16,8 +16,7 @@ namespace Gtt.FastPass.Sample.Tests
                 .AssertStatusCode(200)
                 .AssertMaxResponseTimeMs(1000)
                 .AssertBody<DeckResponse>("Contains deck_id", x => !string.IsNullOrWhiteSpace(x.Deck_id))
-                .WriteResults()
-                .ReturnContext<string, DeckResponse>();
+                .WriteResults();
         }
 
         [ApiTest]
@@ -30,7 +29,7 @@ namespace Gtt.FastPass.Sample.Tests
                 .WithHeader("Accepts", "application/json")
                 .DependentOn(ShuffleDeck, x =>
                 {
-                    response = x.Response;
+                    response = x.ResAs<DeckResponse>();
                 })
                 .Get($"deck/{response.Deck_id}/draw/?count=2")
                 .AssertStatusCode(200)

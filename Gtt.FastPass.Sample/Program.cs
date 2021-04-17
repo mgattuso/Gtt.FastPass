@@ -18,20 +18,16 @@ namespace Gtt.FastPass.Sample
                 consoleMode = args[0].Equals("console", StringComparison.InvariantCultureIgnoreCase);
             }
 
-            var root = new FastPassEndpoint("http://deckofcardsapi.com:80", opts =>
-            {
-                opts.PrintHttpContext = true;
-                opts.WarnOnResponseTimeFailures = true;
-                opts.HttpConnectionTimeoutSeconds = 60 * 20; // 20 mins for local development
-            });
+            var root = new FastPassEndpoint("http://deckofcardsapi.com");
+            FastPassTestRunner<TestModel>.RunAsGui(root);
 
             if (consoleMode)
             {
-                return new FastPassTestRunner<TestModel>(root).RunAllTests();
+                return new FastPassTestRunner<TestModel>(root).RunHeadless();
 
             }
 
-            new GuiRunner<TestModel>(root).Run();
+            
             return 0;
         }
     }

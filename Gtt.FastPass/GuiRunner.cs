@@ -17,9 +17,10 @@ namespace Gtt.FastPass
         FastPassResponse _currentResult;
         private Dictionary<Label, TestDefinition> _labels = new Dictionary<Label, TestDefinition>();
 
-        public GuiRunner(FastPassEndpoint endpoint)
+        internal GuiRunner(FastPassEndpoint endpoint)
         {
             _endpoint = endpoint.Clone();
+            _endpoint.Options.WarnOnResponseTimeFailures = true;
         }
 
         public void Run()
