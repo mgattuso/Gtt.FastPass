@@ -64,3 +64,20 @@ public void ShuffleDeck(FastPassEndpoint test)
         .WriteResults();
 }
 ```
+
+### Basic test configuration
+
+Each test must have the following options:
+
+```
+.Endpoint()
+.Endpoint(<path>)
+```
+Each test must call the .EndPoint method. An optional path can be provided to scope the test to a specific endpoint.
+
+The following optional request options can be set
+
+```
+.WithHeader(<name>, <value>)
+```
+Provide a headers values
