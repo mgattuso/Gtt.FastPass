@@ -8,7 +8,8 @@ An API test suite tool that support dependent API calls.
 
 1. Create a dotnet core console application
 2. Add a reference to Gtt.FastPass nuget package
-3. Use the Visual Studio tools to start multiple projects, the API and the Console Project.
+3. Create an instance of the FastPassEndpoint class with a URL reference to the API endpoint.
+4. Use the Visual Studio tools to start multiple projects, the API and the Console Project.
 
 ### Basic console app that runs the Test GUI
 
@@ -45,6 +46,8 @@ namespace Gtt.FastPass.Sample.Tests
 ```
 
 ### Define a test
+
+All tests must be decorated with the `[ApiTest]` attribute and must accept a `FastPassEndpoint` object parameter:
 
 ```
 [ApiTest]
