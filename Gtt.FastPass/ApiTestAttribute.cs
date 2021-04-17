@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Gtt.FastPass.Attributes
+namespace Gtt.FastPass
 {
     public class ApiTestAttribute : Attribute
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -72,12 +73,12 @@ namespace Gtt.FastPass
             var resultsBtn = new Button(0, 0, "Results");
             var requestBtn = new Button(12, 0, "Request");
             var responseBtn = new Button(24, 0, "Response");
-            var repeatBtn = new Button(36, 0, "Repeat");
+            //var repeatBtn = new Button(36, 0, "Repeat");
 
             rightFrame.Add(resultsBtn);
             rightFrame.Add(requestBtn);
             rightFrame.Add(responseBtn);
-            rightFrame.Add(repeatBtn);
+            //rightFrame.Add(repeatBtn);
 
             var resultText = new TextView
             {
@@ -91,7 +92,11 @@ namespace Gtt.FastPass
             resultsBtn.Clicked += () => WriteResponse(_currentResult, resultText, "");
             requestBtn.Clicked += () => WriteResponse(_currentResult, resultText, "req");
             responseBtn.Clicked += () => WriteResponse(_currentResult, resultText, "res");
-            repeatBtn.Clicked += Paint;
+            //repeatBtn.Clicked += () =>
+            //{
+            //    Paint();
+            //    //TODO: TRIGGER THE TEST AGAIN
+            //};
 
 
             rightFrame.Add(resultText);
@@ -101,11 +106,14 @@ namespace Gtt.FastPass
 
 
 
-            var testsByController = runner.GetTests().GroupBy(x => x.TestClass.Name).ToList();
+            var testsByController = runner.GetTests().GroupBy(x => x.TestClass).ToList();
             int currentRow = 0;
             foreach (var @group in testsByController)
             {
-                leftFrame.Add(new Label(1, currentRow, @group.Key));
+                var attr = @group.Key.GetCustomAttribute<ApiTestSuiteAttribute>();
+                string name = attr?.Name ?? @group.Key.Name;
+
+                leftFrame.Add(new Label(1, currentRow, name));
                 var gl = @group.ToList();
                 foreach (var test in gl)
                 {

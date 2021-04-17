@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Gtt.FastPass.Sample.Flows;
 using Gtt.FastPass.Sample.Models;
 
 namespace Gtt.FastPass.Sample

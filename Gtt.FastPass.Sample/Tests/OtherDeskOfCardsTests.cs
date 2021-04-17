@@ -1,15 +1,9 @@
-﻿using System;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Gtt.FastPass.Attributes;
-using Gtt.FastPass.Sample.Models;
+﻿using Gtt.FastPass.Sample.Models;
 
-namespace Gtt.FastPass.Sample.Flows
+namespace Gtt.FastPass.Sample.Tests
 {
-    [ApiTestSuite("Deck of Cards Tests")]
-    public class DeckOfCardsTests
+    [ApiTestSuite("Other Deck of Cards Tests")]
+    public class OtherDeckOfCardsTests
     {
         [WarmUp]
         public void WarmUp(FastPassEndpoint test)
@@ -46,10 +40,8 @@ namespace Gtt.FastPass.Sample.Flows
                 .AssertMaxResponseTimeMs(1000)
                 .AssertBody<DeckResponse>("Contains deck_id", x => !string.IsNullOrWhiteSpace(x.Deck_id))
                 .WriteResults()
-                .ReturnContext<string,DeckResponse>();
+                .ReturnContext<string, DeckResponse>();
         }
-
-
     }
 
     public static class Ext
