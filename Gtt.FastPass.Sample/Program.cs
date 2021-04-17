@@ -13,6 +13,12 @@ namespace Gtt.FastPass.Sample
     {
         static int Main(string[] args)
         {
+            bool consoleMode = false;
+            if (args != null && args.Length > 0)
+            {
+                consoleMode = args[0].Equals("console", StringComparison.InvariantCultureIgnoreCase);
+            }
+
             var root = new FastPassEndpoint("http://deckofcardsapi.com:80", opts =>
             {
                 opts.PrintHttpContext = true;
@@ -20,22 +26,14 @@ namespace Gtt.FastPass.Sample
                 opts.HttpConnectionTimeoutSeconds = 60 * 20; // 20 mins for local development
             });
 
+            if (consoleMode)
+            {
+                return new FastPassTestRunner<TestModel>(root).RunAllTests();
+
+            }
+
             new GuiRunner<TestModel>(root).Run();
-            //new FastPassTestRunner<TestModel>(root).RunAsGui();
             return 0;
-
-            int counter = 0;
-
-            Parallel.For(0, 1, new ParallelOptions
-            {
-                MaxDegreeOfParallelism = 8
-            }, idx =>
-            {
-                int errors = new FastPassTestRunner<TestModel>(root).RunAllTests();
-                Interlocked.Add(ref counter, errors);
-            });
-
-            return counter;
         }
     }
 
