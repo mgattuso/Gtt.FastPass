@@ -115,7 +115,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse AssertHeader(string header, bool caseSensitive = false)
+        public FastPassResponse AssertHeaderIsPresent(string header, bool caseSensitive = false)
         {
             if (Results.Any(x => !x.Passed)) return this;
 
@@ -136,7 +136,7 @@ namespace Gtt.FastPass
             return this;
         }
 
-        public FastPassResponse AssertHeaderWithValue(string header, string value, bool caseSensitive = false)
+        public FastPassResponse AssertHeaderHasValue(string header, string value, bool caseSensitive = false)
         {
             if (Results.Any(x => !x.Passed)) return this;
 
