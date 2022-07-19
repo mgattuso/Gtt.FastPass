@@ -21,6 +21,9 @@ namespace Gtt.FastPass
         public int StatusCode { get; }
         public string Content { get; }
 
+        public HttpRequestMessage HttpRequest { get; }
+        public HttpResponseMessage HttpResponse { get; }
+
         public T ResAs<T>()
         {
             if (string.IsNullOrWhiteSpace(Content))
@@ -41,8 +44,10 @@ namespace Gtt.FastPass
 
         public Version HttpVersion { get; }
 
-        public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpResponseMessage response, long responseTime)
+        public FastPassResponse(FastPassRequestBuilder requestBuilder, HttpRequestMessage request, HttpResponseMessage response, long responseTime)
         {
+            HttpResponse = response;
+            HttpRequest = request;
             Request = requestBuilder;
             ResponseTime = responseTime;
             HttpVersion = response.Version;
@@ -397,7 +402,9 @@ namespace Gtt.FastPass
             return new ReqRes<TRequest, TResponse>
             {
                 Request = ReqAs<TRequest>(),
-                Response = ResAs<TResponse>()
+                Response = ResAs<TResponse>(),
+                HttpRequest = HttpRequest,
+                HttpResponse = HttpResponse
             };
         }
 

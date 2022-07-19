@@ -16,7 +16,7 @@ namespace Gtt.FastPass
         private static readonly HttpClient Client = new HttpClient();
         private static bool _configurationComplete;
         private static readonly object Lock = new object();
-        public Dictionary<string, string[]> Headers { get; private set; } = new Dictionary<string, string[]>();
+        public Dictionary<string, string[]> Headers { get; } = new Dictionary<string, string[]>();
         public string Content { get; private set; }
         public HttpMethod Method { get; set; }
 
@@ -184,7 +184,7 @@ namespace Gtt.FastPass
             sw.Start();
             var response = Client.SendAsync(msg, HttpCompletionOption.ResponseContentRead, cts.Token).GetAwaiter().GetResult();
             sw.Stop();
-            return new FastPassResponse(this, response, sw.ElapsedMilliseconds);
+            return new FastPassResponse(this, msg, response, sw.ElapsedMilliseconds);
         }
 
         public FastPassRequestBuilder DependentOn<TRes>(Func<FastPassEndpoint, TRes> otherCall, Action<TRes> response)
@@ -246,6 +246,8 @@ namespace Gtt.FastPass
             {
                 response(new ReqRes<TReq, TRes>
                 {
+                    HttpRequest = dependencyDefinition.TestResult.HttpRequest,
+                    HttpResponse = dependencyDefinition.TestResult.HttpResponse,
                     Request = dependencyDefinition.TestResult.ReqAs<TReq>(),
                     Response = dependencyDefinition.TestResult.ResAs<TRes>()
                 });

@@ -1,4 +1,6 @@
-﻿using Gtt.FastPass.Sample.Models;
+﻿using System.Linq;
+using System.Net.Http;
+using Gtt.FastPass.Sample.Models;
 
 namespace Gtt.FastPass.Sample.Tests
 {
@@ -18,10 +20,12 @@ namespace Gtt.FastPass.Sample.Tests
         public void DrawACard(FastPassEndpoint test)
         {
             DeckResponse response = null;
+            HttpResponseMessage httpResponse = null;
             test
                 .BaseCall()
                 .DependentOn(ShuffleDeck, x =>
                 {
+                    httpResponse = x.HttpResponse;
                     response = x.Response;
                 })
                 .Get($"deck/{response.Deck_id}/draw/?count=2")
