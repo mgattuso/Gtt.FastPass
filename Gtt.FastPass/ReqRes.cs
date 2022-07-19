@@ -7,7 +7,6 @@ namespace Gtt.FastPass
     {
         public TReq Request { get; set; }
         public TRes Response { get; set; }
-        public Dictionary<string, string[]> RequestHeaders { get; set; }
         public HttpRequestMessage HttpRequest { get; set; }
         public HttpResponseMessage HttpResponse { get; set; }
     }
