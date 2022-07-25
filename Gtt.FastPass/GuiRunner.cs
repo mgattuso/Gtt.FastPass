@@ -74,11 +74,13 @@ namespace Gtt.FastPass
             var resultsBtn = new Button(0, 0, "Results");
             var requestBtn = new Button(12, 0, "Request");
             var responseBtn = new Button(24, 0, "Response");
+            var copyBtn = new Button(36, 0, "Copy");
             //var repeatBtn = new Button(36, 0, "Repeat");
 
             rightFrame.Add(resultsBtn);
             rightFrame.Add(requestBtn);
             rightFrame.Add(responseBtn);
+            rightFrame.Add(copyBtn);
             //rightFrame.Add(repeatBtn);
 
             var resultText = new TextView
@@ -93,6 +95,7 @@ namespace Gtt.FastPass
             resultsBtn.Clicked += () => WriteResponse(_currentResult, resultText, "");
             requestBtn.Clicked += () => WriteResponse(_currentResult, resultText, "req");
             responseBtn.Clicked += () => WriteResponse(_currentResult, resultText, "res");
+            copyBtn.Clicked += () => CopyRequestAndResponse(_currentResult, resultText);
             //repeatBtn.Clicked += () =>
             //{
             //    Paint();
@@ -165,6 +168,20 @@ namespace Gtt.FastPass
             }
 
             Application.Run();
+        }
+
+        private void CopyRequestAndResponse(FastPassResponse currentResult, TextView resultText)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            TextView temp = new TextView();
+            WriteResponse(currentResult, temp, "req");
+            sb.Append(temp.Text);
+            sb.AppendLine();
+            temp = new TextView();
+            WriteResponse(currentResult, temp, "res");
+            sb.Append(temp.Text);
+            TextCopy.Clipboard.SetText(sb.ToString());
         }
 
         private static void WriteResponse(FastPassResponse result, TextView text, string action = "")
